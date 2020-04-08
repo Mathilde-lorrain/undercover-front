@@ -1,1 +1,14 @@
-<p>home works!</p>
+<div *ngIf="isUserLogged">
+  <button class="btn btn-primary btn-lg" routerLink="/todo">
+    Rejoindre une partie
+  </button>
+  <button class="btn btn-secondary btn-lg" routerLink="/todo">
+    Creer une partie
+  </button>
+  <button class="btn btn-dark btn-lg" routerLink="/todo">
+    Statistiques
+  </button>
+</div>
+<div *ngIf="!isUserLogged">
+  Welcome to undercover! Please sign in or create an account.
+</div>

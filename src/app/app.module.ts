@@ -8,9 +8,22 @@ import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { HomeComponent } from './home/home.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, LoginComponent, SignupComponent, HomeComponent],
-  imports: [BrowserModule, AppRoutingModule, MDBBootstrapModule.forRoot()],
+  declarations: [
+    AppComponent,
+    NavbarComponent,
+    LoginComponent,
+    SignupComponent,
+    HomeComponent,
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MDBBootstrapModule.forRoot(),
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })

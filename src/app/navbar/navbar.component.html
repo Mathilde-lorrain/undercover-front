@@ -25,7 +25,7 @@
           ><mdb-icon fas icon="cog"></mdb-icon> Settings</a
         >
       </li> -->
-      <li *ngIf="!isLogged">
+      <li *ngIf="!isUserLogged">
         <button class="btn btn-outline-light btn-sm my-0" routerLink="/login">
           Se connecter
         </button>
@@ -35,7 +35,7 @@
       </li>
 
       <!-- Dropdown -->
-      <li *ngIf="isLogged" class="nav-item dropdown" dropdown>
+      <li *ngIf="isUserLogged" class="nav-item dropdown" dropdown>
         <a
           dropdownToggle
           mdbWavesEffect
@@ -55,7 +55,7 @@
           <a class="dropdown-item waves-light" mdbWavesEffect href="#"
             >My account</a
           >
-          <a class="dropdown-item waves-light" mdbWavesEffect href="#"
+          <a class="dropdown-item waves-light" mdbWavesEffect (click)="logout()"
             >Log out</a
           >
         </div>
