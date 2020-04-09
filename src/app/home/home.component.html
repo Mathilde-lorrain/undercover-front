@@ -1,14 +1,34 @@
 <div class="container">
   <div *ngIf="isUserLogged">
-    <button class="btn btn-primary btn-lg" routerLink="/todo">
-      Rejoindre une partie
-    </button>
-    <button class="btn btn-secondary btn-lg" routerLink="/todo">
-      Creer une partie
-    </button>
-    <button class="btn btn-dark btn-lg" routerLink="/todo">
-      Statistiques
-    </button>
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Rejoindre une partie</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a routerLink="/todo" class="btn btn-primary">Go</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Creer une partie</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a routerLink="/todo" class="btn btn-primary">Go</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Statistiques</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a routerLink="/todo" class="btn btn-primary">Go</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div *ngIf="!isUserLogged">
     Welcome to undercover! Please sign in or create an account.
