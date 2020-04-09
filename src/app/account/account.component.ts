@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { NotifierService } from "angular-notifier";
 
 @Component({
   selector: 'app-account',
@@ -20,6 +21,7 @@ export class AccountComponent implements OnInit {
   editEnabled = false;
   constructor(
     private authenticationService: AuthenticationService,
+    private notifier: NotifierService,
     private fb: FormBuilder
   ) {
     this.authenticationService.currentUser.subscribe(
@@ -37,6 +39,7 @@ export class AccountComponent implements OnInit {
     this.loading = true;
     // TODO: send updated values
     console.log(this.updateForm.value);
+    this.notifier.notify("success", "User updated.");
   }
   changeEditMode(): void {
     this.editEnabled = !this.editEnabled;
