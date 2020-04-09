@@ -35,7 +35,8 @@ export class AccountComponent implements OnInit {
 
   onSubmit(): void {
     this.loading = true;
-    // TODO
+    // TODO: send updated values
+    console.log(this.updateForm.value);
   }
   changeEditMode(): void {
     this.editEnabled = !this.editEnabled;
