@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { User } from '../models/user';
-
-// import { User } from '@/_models';
+import { backUrl } from '../../variables';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -26,16 +25,14 @@ export class AuthenticationService {
     localStorage.setItem('currentUser', JSON.stringify(true));
     // this.currentUserSubject.next(true);
     // return true;
-    return this.http
-      .post<any>(`http://mlorrain-build.takima.io:8080/login`, `${username}`)
-      .pipe(
-        map((user) => {
-          // store user details and jwt token in local storage to keep user logged in between page refreshes
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          this.currentUserSubject.next(user);
-          return user;
-        })
-      );
+    return this.http.post<any>(`${backUrl}/login`, `${username}`).pipe(
+      map((user) => {
+        // store user details and jwt token in local storage to keep user logged in between page refreshes
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        this.currentUserSubject.next(user);
+        return user;
+      })
+    );
   }
 
   logout() {
