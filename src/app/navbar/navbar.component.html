@@ -28,8 +28,11 @@
       ><mdb-icon fas icon="cog"></mdb-icon> Settings</a
     >
   </li> -->
-        <li *ngIf="!isUserLogged">
-          <button class="btn btn-outline-light btn-sm my-0 mr-1" routerLink="/login">
+        <li *ngIf="!user">
+          <button
+            class="btn btn-outline-light btn-sm my-0 mr-1"
+            routerLink="/login"
+          >
             Se connecter
           </button>
           <button class="btn btn-light btn-sm my-0" routerLink="/signup">
@@ -38,7 +41,7 @@
         </li>
 
         <!-- Dropdown -->
-        <li *ngIf="isUserLogged" class="nav-item dropdown" dropdown>
+        <li *ngIf="user" class="nav-item dropdown" dropdown>
           <a
             dropdownToggle
             mdbWavesEffect
@@ -46,16 +49,18 @@
             class="nav-link dropdown-toggle waves-light"
             mdbWavesEffect
           >
-            <mdb-icon fas icon="user"></mdb-icon> Profile<span
-              class="caret"
-            ></span
+            <mdb-icon fas icon="user"></mdb-icon> {{ user.name | titlecase
+            }}<span class="caret"></span
           ></a>
           <div
             *dropdownMenu
             class="dropdown-menu dropdown-menu-right dropdown dropdown-primary"
             role="menu"
           >
-            <a class="dropdown-item waves-light" mdbWavesEffect routerLink="/account"
+            <a
+              class="dropdown-item waves-light"
+              mdbWavesEffect
+              routerLink="/account"
               >My account</a
             >
             <a

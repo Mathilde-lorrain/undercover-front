@@ -1,5 +1,5 @@
 <div class="container">
-  <div *ngIf="isUserLogged">
+  <div *ngIf="user">
     <div class="row">
       <div class="col-sm-4">
         <div class="card">
@@ -30,7 +30,7 @@
       </div>
     </div>
   </div>
-  <div *ngIf="!isUserLogged">
+  <div *ngIf="!user">
     Welcome to undercover! Please sign in or create an account.
   </div>
 </div>

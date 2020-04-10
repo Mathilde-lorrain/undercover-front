@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
+import { User } from '../models/user';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -9,14 +10,14 @@ import { AuthenticationService } from '../services/authentication.service';
 })
 export class NavbarComponent implements OnInit {
   @Input() title: string;
-
+  user: User;
   isUserLogged: boolean;
 
   constructor(
       private router: Router,
       private authenticationService: AuthenticationService
   ) {
-      this.authenticationService.currentUser.subscribe(x => this.isUserLogged = x);
+      this.authenticationService.currentUser.subscribe(x => this.user = x);
   }
 
   logout() {
