@@ -9,10 +9,10 @@ export class GameService {
   constructor(private http: HttpClient) {}
 
   create() {
-    return this.http.post(`${backUrl}/game`, `{}`).subscribe((game) => {
+    return this.http.post<any>(`${backUrl}/games`, `{}`).subscribe((game) => {
       console.log('My game');
       console.log(game);
-      return this.http.post(`${backUrl}/`, '{}');
+      return this.http.post(`${backUrl}/games/${game.id}/users`, '{}');
     });
   }
 }
