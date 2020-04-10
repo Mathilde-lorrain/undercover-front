@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
 import { User } from '../models/user';
+import { GameService } from '../services/game.service';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +13,10 @@ export class HomeComponent implements OnInit {
   user: User;
   isWaitingGame: boolean;
 
-  constructor(private authenticationService: AuthenticationService) {
+  constructor(
+    private authenticationService: AuthenticationService,
+    private gameService: GameService
+  ) {
     this.authenticationService.currentUser.subscribe((x) => (this.user = x));
     this.isWaitingGame = false;
   }
@@ -23,7 +27,9 @@ export class HomeComponent implements OnInit {
     this.isWaitingGame = true;
   }
 
-  createGame(): void {}
+  createGame(): void {
+    this.gameService.create();
+  }
 
   cancel(): void {
     this.isWaitingGame = false;
