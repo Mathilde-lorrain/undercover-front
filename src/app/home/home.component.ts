@@ -10,21 +10,22 @@ import { User } from '../models/user';
 export class HomeComponent implements OnInit {
   isUserLogged: boolean;
   user: User;
-  isWaitingRoom: boolean;
+  isWaitingGame: boolean;
+
   constructor(private authenticationService: AuthenticationService) {
-    this.authenticationService.currentUser.subscribe(
-      (x) => (this.user = x)
-    );
-    this.isWaitingRoom = false;
+    this.authenticationService.currentUser.subscribe((x) => (this.user = x));
+    this.isWaitingGame = false;
   }
 
   ngOnInit(): void {}
 
-  joinRoom(): void {
-    this.isWaitingRoom = true;
+  joinGame(): void {
+    this.isWaitingGame = true;
   }
 
+  createGame(): void {}
+
   cancel(): void {
-    this.isWaitingRoom = false;
+    this.isWaitingGame = false;
   }
 }
