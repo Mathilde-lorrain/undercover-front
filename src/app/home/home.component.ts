@@ -16,6 +16,9 @@ export class HomeComponent implements OnInit {
   user: User;
   game: any;
   isWaitingGame: boolean;
+  iOweTheGame: boolean = false;
+  gameStarted: boolean = false;
+  playerNumber = 1;
   serverUrl = `${backUrl}/socket`;
   channelUrl;
   stompClient;
@@ -49,6 +52,9 @@ export class HomeComponent implements OnInit {
       this.stompClient.subscribe(this.channelUrl, (message) => {
         console.log('My message received: ');
         console.log(message.body);
+        // Start the game
+        this.gameStarted = true;
+        this.game = JSON.parse(message.body);
       });
     });
   }
@@ -62,6 +68,7 @@ export class HomeComponent implements OnInit {
       this.initializeWebSocketConnection().then((data) => {
         setTimeout(() => {
           this.isWaitingGame = true;
+          this.iOweTheGame = true;
           this.addCurentPlayerToTheCreatedGamge();
         }, 1000);
       });
@@ -70,5 +77,9 @@ export class HomeComponent implements OnInit {
 
   cancel(): void {
     this.isWaitingGame = false;
+  }
+
+  startTheGame(): void {
+    this.stompClient.send(`/app/games/${this.game.id}`, {}, {});
   }
 }
