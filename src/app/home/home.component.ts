@@ -62,7 +62,7 @@ export class HomeComponent implements OnInit {
 
   addCurentPlayerToTheCreatedGamge(): void {
     this.stompClient.send(
-      `${this.channelUrl}`,
+      `/app/games/${this.game.id}/roles`,
       {},
       JSON.stringify({ game: { id: this.game.id }, user: { id: this.user.id } })
     );
@@ -72,13 +72,19 @@ export class HomeComponent implements OnInit {
     let ws = new SockJS(this.serverUrl);
     this.stompClient = Stomp.over(ws);
     this.stompClient.connect({}, (frame) => {
-      this.stompClient.subscribe(this.channelUrl, (message) => {
-        console.log('My message received: ');
-        console.log(message.body);
+      this.stompClient.subscribe(
+        `/app/games/${this.game.id}/users`,
+        (message) => {
+          console.log('My message received: ');
+          console.log(message.body);
+        }
+      );
+      this.stompClient.subscribe(`/app/games/${this.game.id}`, (message) => {
+        console.log('Game is started');
+        // Change location with game
         // Start the game
-        // this.gameStarted = true;
         this.game = JSON.parse(message.body);
-        this.game = this.game.game;
+        this.gameStarted = true;
       });
     });
   }
@@ -104,6 +110,6 @@ export class HomeComponent implements OnInit {
   }
 
   startTheGame(): void {
-    this.stompClient.send(`/app/games/${this.game.id}`, {}, {});
+    this.stompClient.send(`/app/games/${this.game.id}`, {}, `{}`);
   }
 }
