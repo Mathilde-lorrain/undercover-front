@@ -21,11 +21,11 @@ import { ModalComponent } from '../modals/gameId/modal.component';
 export class HomeComponent implements OnInit {
   isUserLogged: boolean;
   user: User;
-  game: any;
+  game: any = { id: '1' };
   isWaitingGame: boolean;
   iOweTheGame: boolean = false;
   gameStarted: boolean = false;
-  playerNumber = 1;
+  usersWaiting = [];
   serverUrl = `${backUrl}/socket`;
   channelUrl;
   stompClient;
@@ -43,13 +43,14 @@ export class HomeComponent implements OnInit {
   openDialog(): void {
     const dialogRef = this.dialog.open(ModalComponent, {
       width: '250px',
-      data: { id: this.gameId, username: this.user.name },
+      data: { id: this.game.id, username: this.user.name },
     });
 
     dialogRef.afterClosed().subscribe((gameId) => {
       if (gameId) {
         console.log('Popup closed with a valid gameId');
-        console.log(gameId);
+        this.game.id = gameId;
+        this.joinGame();
       }
     });
   }
@@ -57,7 +58,12 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {}
 
   joinGame(): void {
-    this.isWaitingGame = true;
+    this.initializeWebSocketConnection().then((data) => {
+      setTimeout(() => {
+        this.isWaitingGame = true;
+        this.addCurentPlayerToTheCreatedGamge();
+      }, 1000);
+    });
   }
 
   addCurentPlayerToTheCreatedGamge(): void {
@@ -75,8 +81,10 @@ export class HomeComponent implements OnInit {
       this.stompClient.subscribe(
         `/app/games/${this.game.id}/users`,
         (message) => {
-          console.log('My message received: ');
-          console.log(message.body);
+          const user = message.body;
+          console.log('New user received: ');
+          console.log(user);
+          this.usersWaiting.push(user);
         }
       );
       this.stompClient.subscribe(`/app/games/${this.game.id}`, (message) => {
