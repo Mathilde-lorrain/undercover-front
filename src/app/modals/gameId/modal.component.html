@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>Hi {{ data.username }}!</h1>
+<div mat-dialog-content>
+  <p>What's the game id?</p>
+  <mat-form-field>
+    <input matInput [(ngModel)]="data.id" />
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data.id" cdkFocusInitial>
+    Go
+  </button>
+</div>
