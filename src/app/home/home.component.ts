@@ -5,6 +5,13 @@ import { GameService } from '../services/game.service';
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { backUrl } from '../../variables';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { DialogData } from '../modals/gameId/DialogData';
+import { ModalComponent } from '../modals/gameId/modal.component';
 
 @Component({
   selector: 'app-home',
@@ -22,13 +29,29 @@ export class HomeComponent implements OnInit {
   serverUrl = `${backUrl}/socket`;
   channelUrl;
   stompClient;
+  gameId: number;
 
   constructor(
     private authenticationService: AuthenticationService,
-    private gameService: GameService
+    private gameService: GameService,
+    public dialog: MatDialog
   ) {
     this.authenticationService.currentUser.subscribe((x) => (this.user = x));
     this.isWaitingGame = false;
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(ModalComponent, {
+      width: '250px',
+      data: { id: this.gameId, username: this.user.name },
+    });
+
+    dialogRef.afterClosed().subscribe((gameId) => {
+      if (gameId) {
+        console.log('Popup closed with a valid gameId');
+        console.log(gameId);
+      }
+    });
   }
 
   ngOnInit(): void {}
