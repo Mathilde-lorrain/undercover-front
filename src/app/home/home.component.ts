@@ -62,9 +62,9 @@ export class HomeComponent implements OnInit {
 
   addCurentPlayerToTheCreatedGamge(): void {
     this.stompClient.send(
-      `${this.channelUrl}/${this.user.id}`,
+      `${this.channelUrl}`,
       {},
-      JSON.stringify(this.user)
+      JSON.stringify({ game: { id: this.game.id }, user: { id: this.user.id } })
     );
   }
 
@@ -76,8 +76,9 @@ export class HomeComponent implements OnInit {
         console.log('My message received: ');
         console.log(message.body);
         // Start the game
-        this.gameStarted = true;
+        // this.gameStarted = true;
         this.game = JSON.parse(message.body);
+        this.game = this.game.game;
       });
     });
   }
