@@ -7,7 +7,7 @@
       *ngFor="let role of game.roles"
       class="card"
       [ngClass]="{
-        breath: isMyTurn && role.user.id == user.id
+        breath: turnOfUserId == role.user.id
       }"
       style="width: 18rem;"
     >

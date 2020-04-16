@@ -18,6 +18,7 @@ export class GameComponent implements OnInit {
   roundNumber = 1;
   isVoteEnable: boolean = false;
   isMyTurn: boolean = false;
+  turnOfUserId;
   firstInstructions = 'Renseignez un mot lors de votre tour';
   secondInstructions = "Voter contre l'un des joueurs";
   instructions = this.firstInstructions;
@@ -34,6 +35,9 @@ export class GameComponent implements OnInit {
     console.log('My game');
     console.log(this.game);
     this.game.roles.map((role, index) => {
+      if (index === 0) {
+        this.turnOfUserId = role.user.id;
+      }
       if (role.user.id === this.user.id) {
         console.log(index);
         if (index === 0) {
