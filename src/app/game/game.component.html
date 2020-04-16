@@ -11,8 +11,20 @@
           <li>mot2</li>
           <li>mot3</li>
         </ul>
-        <button class="btn btn-primary" [disabled]="!voteEnable">Vote</button>
+        <button
+          class="btn btn-primary"
+          *ngIf="user.id != role.user.id"
+          [disabled]="!voteEnable"
+        >
+          Vote
+        </button>
       </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-8">This will be the form</div>
+    <div class="col-sm-4">
+      <button class="btn btn-danger">End turn</button>
     </div>
   </div>
 </div>
