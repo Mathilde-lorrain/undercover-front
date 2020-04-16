@@ -43,7 +43,7 @@
         <button (click)="cancel()" class="col-md-2 btn btn-dark">
           Cancel
         </button>
-        <div *ngIf="iOweTheGame" class="col-md-4">
+        <div *ngIf="iOweTheGame" class="col-md-5">
           <button (click)="startTheGame()" class="btn btn-primary ml-2">
             Start the game
           </button>
@@ -52,6 +52,7 @@
             {{ user }}
           </li>
         </div>
+        <div class="col-md-2">Game id: {{ game.id }}</div>
       </div>
 
       <div class="row">
