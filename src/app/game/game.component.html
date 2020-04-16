@@ -2,8 +2,15 @@
   <h3>Your word: {{ word }}</h3>
   <h4>Tour {{ roundNumber }}: {{ instructions }}</h4>
   <!-- Pour tous les users qui sont presents dans les roles, afficher la carte -->
-  <div class="row">
-    <div *ngFor="let role of game.roles" class="card" style="width: 18rem;">
+  <div class="mt-4 mb-4 row">
+    <div
+      *ngFor="let role of game.roles"
+      class="card"
+      [ngClass]="{
+        breath: isMyTurn && role.user.id == user.id
+      }"
+      style="width: 18rem;"
+    >
       <div class="card-body">
         <h5 class="card-title">{{ role.user.name | titlecase }}</h5>
         <ul>
@@ -14,7 +21,7 @@
         <button
           class="btn btn-primary"
           *ngIf="user.id != role.user.id"
-          [disabled]="!voteEnable"
+          [disabled]="!isVoteEnable"
         >
           Vote
         </button>
@@ -22,9 +29,27 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-sm-8">This will be the form</div>
+    <form [formGroup]="wordForm" (ngSubmit)="onSubmit()">
+      <label>Enter your word:</label>
+      <div class="form-row">
+        <div class="col">
+          <input
+            type="text"
+            required
+            minlength="1"
+            class="form-control"
+            formControlName="userWord"
+          />
+        </div>
+        <div class="col">
+          <button [disabled]="!isMyTurn" class="btn btn-primary" type="submit">
+            Send
+          </button>
+        </div>
+      </div>
+    </form>
     <div class="col-sm-4">
-      <button class="btn btn-danger">End turn</button>
+      <button class="btn btn-danger" [disabled]="!isMyTurn">End turn</button>
     </div>
   </div>
 </div>
