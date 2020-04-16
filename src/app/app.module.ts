@@ -14,6 +14,7 @@ import { AccountComponent } from './account/account.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MaterialModule } from './material.module';
 import { ModalComponent } from './modals/gameId/modal.component';
+import { GameComponent } from './game/game.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,6 +24,7 @@ import { ModalComponent } from './modals/gameId/modal.component';
     HomeComponent,
     AccountComponent,
     ModalComponent,
+    GameComponent,
   ],
   imports: [
     BrowserModule,
