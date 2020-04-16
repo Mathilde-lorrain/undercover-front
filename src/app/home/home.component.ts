@@ -91,6 +91,8 @@ export class HomeComponent implements OnInit {
         console.log('Game is started');
         // Navigate to the game and start the game
         this.game = JSON.parse(message.body);
+        console.log('My game 222222222 ');
+        console.log(this.game);
         this.gameService.setGame(this.game);
         setTimeout(() => {
           this.router.navigate([`/game/${this.game.id}`]);
