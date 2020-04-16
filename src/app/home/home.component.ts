@@ -110,7 +110,7 @@ export class HomeComponent implements OnInit {
           this.isWaitingGame = true;
           this.iOweTheGame = true;
           this.addCurentPlayerToTheCreatedGamge();
-        }, 1000);
+        }, 1500);
       });
     });
   }
