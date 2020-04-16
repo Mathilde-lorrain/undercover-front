@@ -1,5 +1,18 @@
-<p>
-  The game <b>{{ game.id }}</b> is running with civil word
-  <b>{{ game.civilWord }}</b> and undercover word
-  <b>{{ game.undercoverWord }}</b>
-</p>
+<div class="container">
+  <h3>Your word: {{ word }}</h3>
+  <h4>Tour {{ roundNumber }}: {{ instructions }}</h4>
+  <!-- Pour tous les users qui sont presents dans les roles, afficher la carte -->
+  <div class="row">
+    <div *ngFor="let role of game.roles" class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">{{ role.user.name | titlecase }}</h5>
+        <ul>
+          <li>mot1</li>
+          <li>mot2</li>
+          <li>mot3</li>
+        </ul>
+        <button class="btn btn-primary" [disabled]="!voteEnable">Vote</button>
+      </div>
+    </div>
+  </div>
+</div>
