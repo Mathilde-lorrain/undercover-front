@@ -14,9 +14,7 @@
       <div class="card-body">
         <h5 class="card-title">{{ role.user.name | titlecase }}</h5>
         <ul>
-          <li>mot1</li>
-          <li>mot2</li>
-          <li>mot3</li>
+          <li *ngFor="let word of words[role.user.name]">{{ word }}</li>
         </ul>
         <button
           class="btn btn-primary"

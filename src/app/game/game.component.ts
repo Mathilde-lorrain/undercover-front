@@ -22,6 +22,7 @@ export class GameComponent implements OnInit {
   isVoteEnable: boolean = false;
   isMyTurn: boolean = false;
   turnOfUserId;
+  turnNumber;
   index = 0;
   roleId;
   firstInstructions = 'Renseignez un mot lors de votre tour';
@@ -39,13 +40,19 @@ export class GameComponent implements OnInit {
     this.authenticationService.currentUser.subscribe((x) => (this.user = x));
     // this.gameService.currentGame.subscribe((x) => (this.game = x));
     this.game = this.gameService.getGame();
-    console.log('My game333333333333');
     console.log(this.game);
     this.initializeWebSocketConnection();
+    this.turnNumber = this.game.turns[0].turnNumber;
     this.game.roles.map((role, index) => {
+      // For every user
+      // Initialize turnOfUserId
       if (index === 0) {
         this.turnOfUserId = role.user.id;
       }
+      // Initialize array of words
+      this.words[`${role.user.name}`] = [];
+
+      // For the user itself
       if (role.user.id === this.user.id) {
         if (index === 0) {
           this.isMyTurn = true;
@@ -64,10 +71,24 @@ export class GameComponent implements OnInit {
 
   nextTurn(): void {
     this.index = this.index + 1;
-    // TODO: test if index exists. Otherwise, time to vote
-    this.turnOfUserId = this.game.roles[this.index].user.id;
-    if (this.turnOfUserId === this.user.id) {
-      this.isMyTurn = true;
+    // Test if index exists. Otherwise, time to vote
+    if (this.game.roles[this.index]) {
+      this.turnOfUserId = this.game.roles[this.index].user.id;
+      if (this.turnOfUserId === this.user.id) {
+        this.isMyTurn = true;
+      } else {
+        this.isMyTurn = false;
+      }
+    } else {
+      console.log('Time to vote');
+      // Back to zero
+      this.index = 0;
+      // Enable vote
+      this.isVoteEnable = true;
+      // Noone can add a word
+      this.isMyTurn = false;
+      // Stop the animation
+      this.turnOfUserId = -1;
     }
   }
 
@@ -78,15 +99,16 @@ export class GameComponent implements OnInit {
       this.stompClient.subscribe(
         `/app/games/${this.game.id}/words`,
         (message) => {
-          console.log('New word received: ');
+          console.log('New word received.');
           const word = JSON.parse(message.body);
-          console.log(word.word);
-          console.log('from:');
-          console.log(word.role.id);
-          this.words[`${word.role.id}`] = word.word;
-          console.log('Tableau');
-          console.log(this.words);
-          // TODO save words and senders in order to display
+
+          // Save words and senders in order to display
+          this.game.roles.map((role) => {
+            if (word.role.id === role.id) {
+              this.words[`${role.user.name}`].push(word.word);
+            }
+          });
+
           // Change player
           this.nextTurn();
         }
@@ -134,7 +156,7 @@ export class GameComponent implements OnInit {
           id: this.roleId,
         },
         turn: {
-          id: '1',
+          id: this.turnNumber,
         },
         word: word,
       })
