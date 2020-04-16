@@ -1,81 +1,72 @@
 <div class="container">
   <div *ngIf="user">
-    <div *ngIf="!gameStarted">
-      <div *ngIf="!isWaitingGame" class="row">
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Rejoindre une partie</h5>
-              <p class="card-text">
-                With supporting text below as a natural lead-in to additional
-                content.
-              </p>
-              <button (click)="openDialog()" class="btn btn-primary">Go</button>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Creer une partie</h5>
-              <p class="card-text">
-                With supporting text below as a natural lead-in to additional
-                content.
-              </p>
-              <button (click)="createGame()" class="btn btn-primary">Go</button>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Statistiques</h5>
-              <p class="card-text">
-                With supporting text below as a natural lead-in to additional
-                content.
-              </p>
-              <button disabled class="btn btn-primary">Go</button>
-            </div>
+    <div *ngIf="!isWaitingGame" class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Rejoindre une partie</h5>
+            <p class="card-text">
+              With supporting text below as a natural lead-in to additional
+              content.
+            </p>
+            <button (click)="openDialog()" class="btn btn-primary">Go</button>
           </div>
         </div>
       </div>
-      <div *ngIf="isWaitingGame">
-        <div class="row">
-          <button (click)="cancel()" class="col-md-2 btn btn-dark">
-            Cancel
-          </button>
-          <div *ngIf="iOweTheGame" class="col-md-4">
-            <button (click)="startTheGame()" class="btn btn-primary ml-2">
-              Start the game
-            </button>
-            <span class="ml-2">Joueurs prets: </span>
-            <li *ngFor="let user of usersWaiting">
-              {{ user }}
-            </li>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Creer une partie</h5>
+            <p class="card-text">
+              With supporting text below as a natural lead-in to additional
+              content.
+            </p>
+            <button (click)="createGame()" class="btn btn-primary">Go</button>
           </div>
         </div>
-
-        <div class="row">
-          <div id="loader">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="loading"></div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Statistiques</h5>
+            <p class="card-text">
+              With supporting text below as a natural lead-in to additional
+              content.
+            </p>
+            <button disabled class="btn btn-primary">Go</button>
           </div>
         </div>
       </div>
     </div>
-    <div *ngIf="gameStarted">
-      <p>
-        The game <b>{{ game.id }}</b> is running with civil word
-        <b>{{ game.civilWord }}</b> and undercover word
-        <b>{{ game.undercoverWord }}</b>
-      </p>
+    <div *ngIf="isWaitingGame">
+      <div class="row">
+        <button (click)="cancel()" class="col-md-2 btn btn-dark">
+          Cancel
+        </button>
+        <div *ngIf="iOweTheGame" class="col-md-4">
+          <button (click)="startTheGame()" class="btn btn-primary ml-2">
+            Start the game
+          </button>
+          <span class="ml-2">Joueurs prets: </span>
+          <li *ngFor="let user of usersWaiting">
+            {{ user }}
+          </li>
+        </div>
+      </div>
+
+      <div class="row">
+        <div id="loader">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="loading"></div>
+        </div>
+      </div>
     </div>
   </div>
   <div *ngIf="!user">
