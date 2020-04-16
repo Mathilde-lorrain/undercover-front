@@ -17,10 +17,12 @@ export class GameComponent implements OnInit {
   alive;
   roleType;
   word;
+  words = [];
   roundNumber = 1;
   isVoteEnable: boolean = false;
   isMyTurn: boolean = false;
   turnOfUserId;
+  index = 0;
   roleId;
   firstInstructions = 'Renseignez un mot lors de votre tour';
   secondInstructions = "Voter contre l'un des joueurs";
@@ -34,12 +36,12 @@ export class GameComponent implements OnInit {
     private gameService: GameService,
     private formBuilder: FormBuilder
   ) {
-    this.initializeWebSocketConnection();
     this.authenticationService.currentUser.subscribe((x) => (this.user = x));
     // this.gameService.currentGame.subscribe((x) => (this.game = x));
     this.game = this.gameService.getGame();
-    console.log('My game');
+    console.log('My game333333333333');
     console.log(this.game);
+    this.initializeWebSocketConnection();
     this.game.roles.map((role, index) => {
       if (index === 0) {
         this.turnOfUserId = role.user.id;
@@ -60,6 +62,15 @@ export class GameComponent implements OnInit {
     }
   }
 
+  nextTurn(): void {
+    this.index = this.index + 1;
+    // TODO: test if index exists. Otherwise, time to vote
+    this.turnOfUserId = this.game.roles[this.index].user.id;
+    if (this.turnOfUserId === this.user.id) {
+      this.isMyTurn = true;
+    }
+  }
+
   async initializeWebSocketConnection() {
     let ws = new SockJS(this.serverUrl);
     this.stompClient = Stomp.over(ws);
@@ -68,7 +79,16 @@ export class GameComponent implements OnInit {
         `/app/games/${this.game.id}/words`,
         (message) => {
           console.log('New word received: ');
-          console.log(message.body);
+          const word = JSON.parse(message.body);
+          console.log(word.word);
+          console.log('from:');
+          console.log(word.role.id);
+          this.words[`${word.role.id}`] = word.word;
+          console.log('Tableau');
+          console.log(this.words);
+          // TODO save words and senders in order to display
+          // Change player
+          this.nextTurn();
         }
       );
       this.stompClient.subscribe(
@@ -119,5 +139,6 @@ export class GameComponent implements OnInit {
         word: word,
       })
     );
+    this.isMyTurn = false;
   }
 }
