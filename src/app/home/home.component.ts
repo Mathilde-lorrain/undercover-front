@@ -12,6 +12,7 @@ import {
 } from '@angular/material/dialog';
 import { DialogData } from '../modals/gameId/DialogData';
 import { ModalComponent } from '../modals/gameId/modal.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -24,17 +25,16 @@ export class HomeComponent implements OnInit {
   game: any = { id: '1' };
   isWaitingGame: boolean;
   iOweTheGame: boolean = false;
-  gameStarted: boolean = false;
   usersWaiting = [];
   serverUrl = `${backUrl}/socket`;
   channelUrl;
   stompClient;
-  gameId: number;
 
   constructor(
     private authenticationService: AuthenticationService,
     private gameService: GameService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private router: Router
   ) {
     this.authenticationService.currentUser.subscribe((x) => (this.user = x));
     this.isWaitingGame = false;
@@ -89,10 +89,12 @@ export class HomeComponent implements OnInit {
       );
       this.stompClient.subscribe(`/app/games/${this.game.id}`, (message) => {
         console.log('Game is started');
-        // Change location with game
-        // Start the game
+        // Navigate to the game and start the game
         this.game = JSON.parse(message.body);
-        this.gameStarted = true;
+        this.gameService.setGame(this.game);
+        setTimeout(() => {
+          this.router.navigate([`/game/${this.game.id}`]);
+        }, 1000);
       });
     });
   }
