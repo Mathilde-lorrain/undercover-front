@@ -6,6 +6,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { backUrl } from 'src/variables';
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
+import { NotifierService } from 'angular-notifier';
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
@@ -36,7 +37,8 @@ export class GameComponent implements OnInit {
   constructor(
     private authenticationService: AuthenticationService,
     private gameService: GameService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private notifier: NotifierService
   ) {
     this.authenticationService.currentUser.subscribe((x) => (this.user = x));
     // this.gameService.currentGame.subscribe((x) => (this.game = x));
@@ -58,6 +60,7 @@ export class GameComponent implements OnInit {
       if (role.user.id === this.user.id) {
         if (index === 0) {
           this.isMyTurn = true;
+          this.notifier.notify('info', `It is your turn.`);
         }
         this.roleId = role.id;
         this.roleType = role.roleType;
@@ -101,6 +104,7 @@ export class GameComponent implements OnInit {
         this.turnOfUserId = this.game.roles[this.index].user.id;
         if (this.turnOfUserId === this.user.id) {
           this.isMyTurn = true;
+          this.notifier.notify('info', `It is your turn.`);
         } else {
           this.isMyTurn = false;
         }
@@ -108,7 +112,7 @@ export class GameComponent implements OnInit {
         this.nextTurn();
       }
     } else {
-      console.log('Time to vote');
+      this.notifier.notify('info', `Time to vote.`);
       // Update game instructions
       this.instructions = this.secondInstructions;
       // Back to zero
@@ -130,11 +134,16 @@ export class GameComponent implements OnInit {
         `/app/games/${this.game.id}/words`,
         (message) => {
           console.log('New word received.');
+
           const word = JSON.parse(message.body);
 
           // Save words and senders in order to display
           this.game.roles.map((role) => {
             if (word.role.id === role.id) {
+              this.notifier.notify(
+                'info',
+                `${role.user.name} says ${word.word}.`
+              );
               this.words[`${role.user.name}`].push(word.word);
             }
           });
@@ -166,7 +175,7 @@ export class GameComponent implements OnInit {
               role.alive = false;
               // For the eliminated Player
               if (eliminatedPlayerId === this.roleId) {
-                console.log('My ass has been kick out.');
+                this.notifier.notify('error', `You have been eliminated.`);
                 this.alive = false;
               }
             }
@@ -178,7 +187,7 @@ export class GameComponent implements OnInit {
                 this.index = i;
                 this.turnOfUserId = this.game.roles[i].user.id;
                 if (this.user.id === this.turnOfUserId) {
-                  console.log("It's my turn.");
+                  this.notifier.notify('info', `It is your turn.`);
                   this.isMyTurn = true;
                 }
                 break;
