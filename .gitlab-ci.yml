@@ -1,0 +1,63 @@
+variables:
+    STORE_APP: "./"
+    NODE_IMAGE: "node:10-alpine"
+    DOCKER_IMAGE: "docker:18.09.7"
+    DOCKER_IN_DOCKER_IMAGE: ${DOCKER_IMAGE}-dind
+    DOCKER_DRIVER: overlay2
+    STAGING_HOST: mlorrain-build.takima.io
+  
+  stages: # Declared stage order is execution order
+    - build
+    - package
+    - deploy
+  
+  # Jobs definition
+  # build
+  frontend:build:
+    image: $NODE_IMAGE
+    stage: build
+    artifacts:
+      paths:
+        - $STORE_APP/dist/
+      expire_in: 1h
+    script:
+      - npm run ng build
+    
+  frontend:package:
+    image: $DOCKER_IMAGE
+    stage: package
+    services:
+      - $DOCKER_IN_DOCKER_IMAGE
+    dependencies:
+      - frontend:build # Download dist/ from build stages
+    before_script:
+      - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    script:
+      - docker pull $CI_REGISTRY_IMAGE/undercover-front:latest || true
+      - docker build -f $STORE_APP/Dockerfile --cache-from $CI_REGISTRY_IMAGE/undercover-front:latest -t $CI_REGISTRY_IMAGE/undercover-front:$CI_COMMIT_REF_NAME -t $CI_REGISTRY_IMAGE/undercover-front:latest $STORE_APP
+      - docker push $CI_REGISTRY_IMAGE/undercover-front:$CI_COMMIT_REF_NAME
+      - docker push $CI_REGISTRY_IMAGE/undercover-front:latest
+  
+  frontend:staging:
+    stage: deploy
+    before_script:
+      - 'which ssh-agent || ( apk update && apk add openssh-client )'
+      - eval $(ssh-agent -s)
+      - echo "$SSH_PRIVATE_KEYS" | tr -d '\r' | ssh-add -
+      - mkdir -p ~/.ssh
+      - chmod 700 ~/.ssh
+      - ssh-keyscan $STAGING_HOST >> ~/.ssh/known_hosts
+      - chmod 644 ~/.ssh/known_hosts
+    variables:
+      TAG: "$CI_COMMIT_REF_NAME"
+    script:
+      # Copying compose files over the server (we don't need the whole Git repo)
+      - scp -P 22 -r docker-compose.yml centos@$STAGING_HOST:~/undercover/
+      # Deployment
+      - ssh centos@$STAGING_HOST "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
+      - ssh centos@$STAGING_HOST "docker-compose -f ~/undercover/docker-compose.yml pull undercover-front"
+      - ssh centos@$STAGING_HOST "docker-compose -f ~/undercover/docker-compose.yml up --force-recreate --no-build undercover-front"
+    only:
+      - develop
+      - master
+  
