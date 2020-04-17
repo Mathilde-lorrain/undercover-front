@@ -58,7 +58,7 @@ frontend:staging:
     # Deployment
     - ssh centos@$STAGING_HOST "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
     - ssh centos@$STAGING_HOST "docker-compose -f ~/undercover/docker-compose.yml pull undercover-front"
-    - ssh centos@$STAGING_HOST "docker-compose -f ~/undercover/docker-compose.yml up --force-recreate --no-build undercover-front"
+    - ssh centos@$STAGING_HOST "docker-compose -f ~/undercover/docker-compose.yml up --force-recreate undercover-front"
   only:
     - develop
     - master
