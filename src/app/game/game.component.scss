@@ -5,6 +5,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
+.eliminated {
+  background-color: gray;
+}
+
 @-webkit-keyframes breathing {
   0% {
     -webkit-transform: scale(0.95);

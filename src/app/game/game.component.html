@@ -1,6 +1,6 @@
 <div class="container">
   <h3>Your word: {{ word }}</h3>
-  <h4>Tour {{ roundNumber }}: {{ instructions }}</h4>
+  <h4>Tour {{ turnNumber }}: {{ instructions }}</h4>
   <!-- Pour tous les users qui sont presents dans les roles, afficher la carte -->
   <div class="mt-4 mb-4 row">
     <div
@@ -11,14 +11,15 @@
       }"
       style="width: 18rem;"
     >
-      <div class="card-body">
+      <div class="card-body" [ngClass]="{ eliminated: !role.alive }">
         <h5 class="card-title">{{ role.user.name | titlecase }}</h5>
         <ul>
           <li *ngFor="let word of words[role.user.name]">{{ word }}</li>
         </ul>
         <button
           class="btn btn-primary"
-          *ngIf="user.id != role.user.id"
+          *ngIf="user.id != role.user.id && role.alive"
+          (click)="voteAgainst(role.id)"
           [disabled]="!isVoteEnable"
         >
           Vote
