@@ -20,6 +20,8 @@ frontend:build:
     paths:
       - $STORE_APP/dist/
     expire_in: 1h
+  before_script:
+    - npm install
   script:
     - npm run ng build
 
