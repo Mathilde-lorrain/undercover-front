@@ -18,11 +18,13 @@ export class GameComponent implements OnInit {
   roleType;
   word;
   words = [];
-  roundNumber = 1;
   isVoteEnable: boolean = false;
   isMyTurn: boolean = false;
+  isTheLastToVote: boolean = false;
+  numberOfVotes = 0;
   turnOfUserId;
   turnNumber;
+  turnNumberId;
   index = 0;
   roleId;
   firstInstructions = 'Renseignez un mot lors de votre tour';
@@ -31,7 +33,6 @@ export class GameComponent implements OnInit {
   wordForm: FormGroup;
   serverUrl = `${backUrl}/socket`;
   stompClient;
-
   constructor(
     private authenticationService: AuthenticationService,
     private gameService: GameService,
@@ -43,6 +44,7 @@ export class GameComponent implements OnInit {
     console.log(this.game);
     this.initializeWebSocketConnection();
     this.turnNumber = this.game.turns[0].turnNumber;
+    this.turnNumberId = this.game.turns[0].id;
     this.game.roles.map((role, index) => {
       // For every user
       // Initialize turnOfUserId
@@ -69,18 +71,46 @@ export class GameComponent implements OnInit {
     }
   }
 
+  voteAgainst(targetRoleId) {
+    // Can only vote one time per turn
+    this.isVoteEnable = false;
+    this.stompClient.send(
+      `/app/games/${this.game.id}/votes`,
+      {},
+      JSON.stringify({
+        turn: {
+          id: this.turnNumberId,
+        },
+        voter: {
+          id: this.roleId,
+        },
+        target: {
+          id: targetRoleId,
+        },
+        isLast: this.isTheLastToVote,
+      })
+    );
+  }
+
   nextTurn(): void {
     this.index = this.index + 1;
-    // Test if index exists. Otherwise, time to vote
+    // Test if index exists and if the role is alive. Otherwise, time to vote
     if (this.game.roles[this.index]) {
-      this.turnOfUserId = this.game.roles[this.index].user.id;
-      if (this.turnOfUserId === this.user.id) {
-        this.isMyTurn = true;
+      // If role alive
+      if (this.game.roles[this.index].alive) {
+        this.turnOfUserId = this.game.roles[this.index].user.id;
+        if (this.turnOfUserId === this.user.id) {
+          this.isMyTurn = true;
+        } else {
+          this.isMyTurn = false;
+        }
       } else {
-        this.isMyTurn = false;
+        this.nextTurn();
       }
     } else {
       console.log('Time to vote');
+      // Update game instructions
+      this.instructions = this.secondInstructions;
       // Back to zero
       this.index = 0;
       // Enable vote
@@ -113,18 +143,48 @@ export class GameComponent implements OnInit {
           this.nextTurn();
         }
       );
-      this.stompClient.subscribe(
-        `/app/games/${this.game.id}/votes`,
-        (message) => {
-          console.log('votes is started');
-          console.log(message.body);
+      this.stompClient.subscribe(`/app/games/${this.game.id}/votes`, () => {
+        console.log('Someone has voted.');
+        this.numberOfVotes = this.numberOfVotes + 1;
+        if (this.numberOfVotes === this.game.roles.length - 1) {
+          this.isTheLastToVote = true;
         }
-      );
+      });
       this.stompClient.subscribe(
         `/app/games/${this.game.id}/turns`,
         (message) => {
-          console.log('turn is ended');
-          console.log(message.body);
+          console.log('Turn is ended.');
+          this.instructions = this.firstInstructions;
+          const info = JSON.parse(message.body);
+          this.turnNumberId = info.turnId;
+          this.turnNumber = this.turnNumber + 1;
+          const eliminatedPlayerId = info.eliminatedPlayerId;
+          // For every players
+          this.game.roles.map((role) => {
+            if (role.id === eliminatedPlayerId) {
+              // Tell who is dead
+              role.alive = false;
+              // For the eliminated Player
+              if (eliminatedPlayerId === this.roleId) {
+                console.log('My ass has been kick out.');
+                this.alive = false;
+              }
+            }
+          });
+          if (this.alive) {
+            for (let i = 0; i < this.game.roles.length; i++) {
+              if (this.game.roles[i].alive) {
+                console.log('Should display once per user left.');
+                this.index = i;
+                this.turnOfUserId = this.game.roles[i].user.id;
+                if (this.user.id === this.turnOfUserId) {
+                  console.log("It's my turn.");
+                  this.isMyTurn = true;
+                }
+                break;
+              }
+            }
+          }
         }
       );
     });
@@ -156,7 +216,7 @@ export class GameComponent implements OnInit {
           id: this.roleId,
         },
         turn: {
-          id: this.turnNumber,
+          id: this.turnNumberId,
         },
         word: word,
       })
