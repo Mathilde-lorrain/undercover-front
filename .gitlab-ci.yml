@@ -54,7 +54,7 @@ frontend:staging:
     TAG: '$CI_COMMIT_REF_NAME'
   script:
     # Copying compose files over the server (we don't need the whole Git repo)
-    - scp -P 22 -r docker-compose.yml centos@$STAGING_HOST:~/undercover/
+    - scp -P 22 docker-compose.yml centos@$STAGING_HOST:~/undercover/
     # Deployment
     - ssh centos@$STAGING_HOST "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
     - ssh centos@$STAGING_HOST "docker-compose -f ~/undercover/docker-compose.yml pull undercover-front"
