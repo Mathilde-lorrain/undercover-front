@@ -20,7 +20,7 @@
           class="btn btn-primary"
           *ngIf="user.id != role.user.id && role.alive"
           (click)="voteAgainst(role.id)"
-          [disabled]="!isVoteEnable"
+          [disabled]="!isVoteEnable || !alive"
         >
           Vote
         </button>

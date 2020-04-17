@@ -187,18 +187,16 @@ export class GameComponent implements OnInit {
               }
             }
           });
-          if (this.alive) {
-            for (let i = 0; i < this.game.roles.length; i++) {
-              if (this.game.roles[i].alive) {
-                console.log('Should display once per user left.');
-                this.index = i;
-                this.turnOfUserId = this.game.roles[i].user.id;
-                if (this.user.id === this.turnOfUserId) {
-                  this.notifier.notify('info', `It is your turn.`);
-                  this.isMyTurn = true;
-                }
-                break;
+          for (let i = 0; i < this.game.roles.length; i++) {
+            if (this.game.roles[i].alive) {
+              console.log('Should display once per user left.');
+              this.index = i;
+              this.turnOfUserId = this.game.roles[i].user.id;
+              if (this.user.id === this.turnOfUserId) {
+                this.notifier.notify('info', `It is your turn.`);
+                this.isMyTurn = true;
               }
+              break;
             }
           }
         }
