@@ -23,6 +23,7 @@ export class GameComponent implements OnInit {
   isMyTurn: boolean = false;
   isTheLastToVote: boolean = false;
   numberOfVotes = 0;
+  numberOfPlayersAlives;
   turnOfUserId;
   turnNumber;
   turnNumberId;
@@ -67,6 +68,7 @@ export class GameComponent implements OnInit {
         this.alive = role.alive;
       }
     });
+    this.numberOfPlayersAlives = this.game.roles.length;
     if (this.roleType === 'CIVIL') {
       this.word = this.game.civilWord;
     } else if (this.roleType === 'UNDERCOVER') {
@@ -155,7 +157,7 @@ export class GameComponent implements OnInit {
       this.stompClient.subscribe(`/app/games/${this.game.id}/votes`, () => {
         console.log('Someone has voted.');
         this.numberOfVotes = this.numberOfVotes + 1;
-        if (this.numberOfVotes === this.game.roles.length - 1) {
+        if (this.numberOfVotes === this.numberOfPlayersAlives - 1) {
           this.isTheLastToVote = true;
         }
       });
@@ -167,6 +169,11 @@ export class GameComponent implements OnInit {
           const info = JSON.parse(message.body);
           this.turnNumberId = info.turnId;
           this.turnNumber = this.turnNumber + 1;
+          // Reset number of votes
+          this.isTheLastToVote = false;
+          this.numberOfVotes = 0;
+          // Update number of players in the game
+          this.numberOfPlayersAlives = this.numberOfPlayersAlives - 1;
           const eliminatedPlayerId = info.eliminatedPlayerId;
           // For every players
           this.game.roles.map((role) => {
