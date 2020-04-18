@@ -7,6 +7,7 @@ import { backUrl } from 'src/variables';
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { NotifierService } from 'angular-notifier';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
@@ -39,7 +40,8 @@ export class GameComponent implements OnInit {
     private authenticationService: AuthenticationService,
     private gameService: GameService,
     private formBuilder: FormBuilder,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private router: Router
   ) {
     this.authenticationService.currentUser.subscribe((x) => (this.user = x));
     // this.gameService.currentGame.subscribe((x) => (this.game = x));
@@ -165,38 +167,62 @@ export class GameComponent implements OnInit {
         `/app/games/${this.game.id}/turns`,
         (message) => {
           console.log('Turn is ended.');
-          this.instructions = this.firstInstructions;
+          // Check if the game is ended (if there are winners)
           const info = JSON.parse(message.body);
-          this.turnNumberId = info.turnId;
-          this.turnNumber = this.turnNumber + 1;
-          // Reset number of votes
-          this.isTheLastToVote = false;
-          this.numberOfVotes = 0;
-          // Update number of players in the game
-          this.numberOfPlayersAlives = this.numberOfPlayersAlives - 1;
-          const eliminatedPlayerId = info.eliminatedPlayerId;
-          // For every players
-          this.game.roles.map((role) => {
-            if (role.id === eliminatedPlayerId) {
-              // Tell who is dead
-              role.alive = false;
-              // For the eliminated Player
-              if (eliminatedPlayerId === this.roleId) {
-                this.notifier.notify('error', `You have been eliminated.`);
-                this.alive = false;
+          if (info.winnersId) {
+            info.winnersId.map((winnerRoleId) => {
+              this.game.roles.map((role) => {
+                if (role.id === winnerRoleId) {
+                  if (role.roleType === this.roleType) {
+                    this.notifier.notify(
+                      'success',
+                      `Victory of ${role.user.name}! Was ${role.roleType}.`
+                    );
+                  } else {
+                    this.notifier.notify(
+                      'error',
+                      `Victory of ${role.user.name}! Was ${role.roleType}.`
+                    );
+                  }
+                }
+              });
+            });
+            setTimeout(() => {
+              this.router.navigate([`/home`]);
+            }, 1000);
+          } else {
+            this.instructions = this.firstInstructions;
+            this.turnNumberId = info.turnId;
+            this.turnNumber = this.turnNumber + 1;
+            // Reset number of votes
+            this.isTheLastToVote = false;
+            this.numberOfVotes = 0;
+            // Update number of players in the game
+            this.numberOfPlayersAlives = this.numberOfPlayersAlives - 1;
+            const eliminatedPlayerId = info.eliminatedPlayerId;
+            // For every players
+            this.game.roles.map((role) => {
+              if (role.id === eliminatedPlayerId) {
+                // Tell who is dead
+                role.alive = false;
+                // For the eliminated Player
+                if (eliminatedPlayerId === this.roleId) {
+                  this.notifier.notify('error', `You have been eliminated.`);
+                  this.alive = false;
+                }
               }
-            }
-          });
-          for (let i = 0; i < this.game.roles.length; i++) {
-            if (this.game.roles[i].alive) {
-              console.log('Should display once per user left.');
-              this.index = i;
-              this.turnOfUserId = this.game.roles[i].user.id;
-              if (this.user.id === this.turnOfUserId) {
-                this.notifier.notify('info', `It is your turn.`);
-                this.isMyTurn = true;
+            });
+            for (let i = 0; i < this.game.roles.length; i++) {
+              if (this.game.roles[i].alive) {
+                console.log('Should display once per user left.');
+                this.index = i;
+                this.turnOfUserId = this.game.roles[i].user.id;
+                if (this.user.id === this.turnOfUserId) {
+                  this.notifier.notify('info', `It is your turn.`);
+                  this.isMyTurn = true;
+                }
+                break;
               }
-              break;
             }
           }
         }
