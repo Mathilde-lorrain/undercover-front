@@ -75,6 +75,8 @@ export class GameComponent implements OnInit {
       this.word = this.game.civilWord;
     } else if (this.roleType === 'UNDERCOVER') {
       this.word = this.game.undercoverWord;
+    } else if (this.roleType === 'MISTERWHITE') {
+      this.word = '^^ (Mr. White)';
     }
   }
 
