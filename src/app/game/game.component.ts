@@ -44,6 +44,7 @@ export class GameComponent implements OnInit {
   wordForm: FormGroup;
   serverUrl = `${backUrl}/socket`;
   stompClient;
+  misterWhiteRoleId;
   constructor(
     private authenticationService: AuthenticationService,
     private gameService: GameService,
@@ -202,47 +203,74 @@ export class GameComponent implements OnInit {
               this.router.navigate([`/home`]);
             }, 1000);
           } else {
-            this.instructions = this.firstInstructions;
-            this.turnNumberId = info.turnId;
-            this.turnNumber = this.turnNumber + 1;
-            // Reset number of votes
-            this.isTheLastToVote = false;
-            this.numberOfVotes = 0;
-            // Update number of players in the game
-            this.numberOfPlayersAlives = this.numberOfPlayersAlives - 1;
-            const eliminatedPlayerId = info.eliminatedPlayerId;
-            // For every players
-            this.game.roles.map((role) => {
-              if (role.id === eliminatedPlayerId) {
-                // Tell who is dead
-                role.alive = false;
-                // For the eliminated Player
-                if (eliminatedPlayerId === this.roleId) {
-                  this.notifier.notify('error', `You have been eliminated.`);
-                  this.alive = false;
-                  // Ask the word of Mr White
-                  if (this.roleType === 'MISTERWHITE') {
-                    this.openMisterWhiteDialog();
+            // Check if exists
+            if (info.eliminatedPlayerId) {
+              // Check if misterWhite
+              this.game.roles
+                .filter((role) => role.roleType === 'MISTERWHITE')
+                .map((role) => {
+                  this.misterWhiteRoleId = role.id;
+                  if (role.id === info.eliminatedPlayerId) {
+                    // Mister white has been eliminated
+                    // Ask the word of Mr White
+                    if (this.roleType === 'MISTERWHITE') {
+                      this.openMisterWhiteDialog();
+                    }
+                  } else {
+                    // Someonelse has been elimnated
+                    this.updateGameInformation(info);
                   }
-                }
-              }
-            });
-            for (let i = 0; i < this.game.roles.length; i++) {
-              if (this.game.roles[i].alive) {
-                console.log('Should display once per user left.');
-                this.index = i;
-                this.turnOfUserId = this.game.roles[i].user.id;
-                if (this.user.id === this.turnOfUserId) {
-                  this.notifier.notify('info', `It is your turn.`);
-                  this.isMyTurn = true;
-                }
-                break;
-              }
+                });
+            } else {
+              // Keep going the game
+              this.updateGameInformation(info);
             }
           }
         }
       );
     });
+  }
+
+  updateGameInformation(info): void {
+    this.instructions = this.firstInstructions;
+    this.turnNumberId = info.turnId;
+    this.turnNumber = this.turnNumber + 1;
+    // Reset number of votes
+    this.isTheLastToVote = false;
+    this.numberOfVotes = 0;
+    // Update number of players in the game
+    this.numberOfPlayersAlives = this.numberOfPlayersAlives - 1;
+    let eliminatedPlayerId;
+    if (info.eliminatedPlayerId) {
+      eliminatedPlayerId = info.eliminatedPlayerId;
+    } else {
+      eliminatedPlayerId = this.misterWhiteRoleId;
+    }
+
+    // For every players
+    this.game.roles.map((role) => {
+      if (role.id === eliminatedPlayerId) {
+        // Tell who is dead
+        role.alive = false;
+        // For the eliminated Player
+        if (eliminatedPlayerId === this.roleId) {
+          this.notifier.notify('error', `You have been eliminated.`);
+          this.alive = false;
+        }
+      }
+    });
+    for (let i = 0; i < this.game.roles.length; i++) {
+      if (this.game.roles[i].alive) {
+        console.log('Should display once per user left.');
+        this.index = i;
+        this.turnOfUserId = this.game.roles[i].user.id;
+        if (this.user.id === this.turnOfUserId) {
+          this.notifier.notify('info', `It is your turn.`);
+          this.isMyTurn = true;
+        }
+        break;
+      }
+    }
   }
 
   openMisterWhiteDialog(): void {
