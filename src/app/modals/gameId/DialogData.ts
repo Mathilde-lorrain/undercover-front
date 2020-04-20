@@ -1,4 +1,4 @@
 export interface DialogData {
-  id: number;
-  username: string;
+  question: string;
+  value: string;
 }

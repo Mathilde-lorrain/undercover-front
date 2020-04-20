@@ -45,7 +45,7 @@ export class HomeComponent implements OnInit {
   openDialog(): void {
     const dialogRef = this.dialog.open(ModalComponent, {
       width: '250px',
-      data: { id: this.game.id, username: this.user.name },
+      data: { question: 'What is the game id?', value: this.game.id },
     });
 
     dialogRef.afterClosed().subscribe((gameId) => {

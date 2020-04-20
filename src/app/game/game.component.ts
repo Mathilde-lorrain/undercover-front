@@ -8,6 +8,14 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { NotifierService } from 'angular-notifier';
 import { Router } from '@angular/router';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { DialogData } from '../modals/gameId/DialogData';
+import { ModalComponent } from '../modals/gameId/modal.component';
+
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
@@ -41,7 +49,8 @@ export class GameComponent implements OnInit {
     private gameService: GameService,
     private formBuilder: FormBuilder,
     private notifier: NotifierService,
-    private router: Router
+    private router: Router,
+    public dialog: MatDialog
   ) {
     this.authenticationService.currentUser.subscribe((x) => (this.user = x));
     // this.gameService.currentGame.subscribe((x) => (this.game = x));
@@ -171,7 +180,7 @@ export class GameComponent implements OnInit {
           console.log('Turn is ended.');
           // Check if the game is ended (if there are winners)
           const info = JSON.parse(message.body);
-          if (info.winnersId) {
+          if (info.winnersId.length > 0) {
             info.winnersId.map((winnerRoleId) => {
               this.game.roles.map((role) => {
                 if (role.id === winnerRoleId) {
@@ -211,6 +220,10 @@ export class GameComponent implements OnInit {
                 if (eliminatedPlayerId === this.roleId) {
                   this.notifier.notify('error', `You have been eliminated.`);
                   this.alive = false;
+                  // Ask the word of Mr White
+                  if (this.roleType === 'MISTERWHITE') {
+                    this.openMisterWhiteDialog();
+                  }
                 }
               }
             });
@@ -229,6 +242,22 @@ export class GameComponent implements OnInit {
           }
         }
       );
+    });
+  }
+
+  openMisterWhiteDialog(): void {
+    const dialogRef = this.dialog.open(ModalComponent, {
+      width: '250px',
+      data: {
+        question: 'What do you think the civil word is?',
+        value: 'ex: souris',
+      },
+    });
+    dialogRef.afterClosed().subscribe((misterWhiteWord) => {
+      if (misterWhiteWord) {
+        console.log('Mister White sent this word:');
+        console.log(misterWhiteWord);
+      }
     });
   }
 
