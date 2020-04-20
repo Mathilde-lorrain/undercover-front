@@ -25,6 +25,8 @@ export class HomeComponent implements OnInit {
   game: any = { id: '1' };
   isWaitingGame: boolean;
   iOweTheGame: boolean = false;
+  // Cannot start the game before 3 players in the game
+  iCanStartTheGame: boolean = false;
   usersWaiting = [];
   serverUrl = `${backUrl}/socket`;
   channelUrl;
@@ -85,6 +87,9 @@ export class HomeComponent implements OnInit {
           console.log('New user received: ');
           console.log(user);
           this.usersWaiting.push(user);
+          if (this.usersWaiting.length >= 3) {
+            this.iCanStartTheGame = true;
+          }
         }
       );
       this.stompClient.subscribe(`/app/games/${this.game.id}`, (message) => {
