@@ -5,6 +5,8 @@ services:
     build:
       context: ./
     container_name: undercover-front
-    image: registry.gitlab.com/mathildelorrain/undercover_front/undercover-front:latest
+    image: undercover-front
+    env_file:
+      - .env
     ports:
       - 8081:80
