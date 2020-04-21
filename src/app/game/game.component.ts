@@ -206,19 +206,24 @@ export class GameComponent implements OnInit {
           } else {
             // Check if exists
             if (info.eliminatedPlayerId) {
+              console.log('Player id eliminated:');
+              console.log(info.eliminatedPlayerId);
               // Check if misterWhite
               this.game.roles
                 .filter((role) => role.roleType === 'MISTERWHITE')
                 .map((role) => {
                   this.misterWhiteRoleId = role.id;
+                  console.log('MisterWhite is:');
+                  console.log(JSON.stringify(role));
                   if (role.id === info.eliminatedPlayerId) {
                     console.log('MISTER WHITE HAS BEEN KICKED.');
                     // Mister white has been eliminated
                     // Ask the word of Mr White
-                    if (this.roleType === 'MISTERWHITE') {
+                    if (this.roleType === 'MISTERWHITE' && this.alive) {
                       this.openMisterWhiteDialog();
                     } else {
                       // TODO: other player are waiting for mister white vote.
+                      console.log('WAITING FOR MISTERWHITE.');
                     }
                   } else {
                     console.log('Keep doing the game 111111.');
