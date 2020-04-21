@@ -93,6 +93,9 @@ export class GameComponent implements OnInit {
   voteAgainst(targetRoleId) {
     // Can only vote one time per turn
     this.isVoteEnable = false;
+    console.log(
+      `${this.user.name}(${this.roleId}) vote against ${targetRoleId} during the turnId: ${this.turnNumberId}.`
+    );
     this.stompClient.send(
       `/app/games/${this.game.id}/votes`,
       {},
