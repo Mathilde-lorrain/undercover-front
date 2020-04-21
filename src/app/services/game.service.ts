@@ -21,9 +21,9 @@ export class GameService {
     return this.http.post<any>(`${backUrl}/api/games`, {});
   }
   addWords(firstWord, secondWord) {
-    // TODO: post request
-    console.log('Need to send:');
-    console.log(firstWord);
-    console.log(secondWord);
+    return this.http.post<any>(`${backUrl}/api/wordPairs`, {
+      word1: firstWord,
+      word2: secondWord,
+    });
   }
 }

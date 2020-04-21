@@ -37,9 +37,14 @@ export class AdminComponent implements OnInit {
     if (this.wordForm.invalid) {
       return;
     }
-    this.gameService.addWords(
-      this.wordForm.controls.firstWord.value,
-      this.wordForm.controls.secondWord.value
-    );
+    this.gameService
+      .addWords(
+        this.wordForm.controls.firstWord.value,
+        this.wordForm.controls.secondWord.value
+      )
+      .subscribe((message) => {
+        console.log('Ok messgae added');
+        console.log(message);
+      });
   }
 }
