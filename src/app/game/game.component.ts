@@ -223,6 +223,7 @@ export class GameComponent implements OnInit {
                     // Mister white has been eliminated
                     // Ask the word of Mr White
                     if (this.roleType === 'MISTERWHITE' && this.alive) {
+                      this.turnNumberId = info.turnId;
                       this.openMisterWhiteDialog();
                     } else {
                       // TODO: other player are waiting for mister white vote.
