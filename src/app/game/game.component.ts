@@ -181,6 +181,7 @@ export class GameComponent implements OnInit {
           console.log('Turn is ended.');
           // Check if the game is ended (if there are winners)
           const info = JSON.parse(message.body);
+          console.log(info);
           if (info.winnersId.length > 0) {
             info.winnersId.map((winnerRoleId) => {
               this.game.roles.map((role) => {
@@ -211,17 +212,22 @@ export class GameComponent implements OnInit {
                 .map((role) => {
                   this.misterWhiteRoleId = role.id;
                   if (role.id === info.eliminatedPlayerId) {
+                    console.log('MISTER WHITE HAS BEEN KICKED.');
                     // Mister white has been eliminated
                     // Ask the word of Mr White
                     if (this.roleType === 'MISTERWHITE') {
                       this.openMisterWhiteDialog();
+                    } else {
+                      // TODO: other player are waiting for mister white vote.
                     }
                   } else {
+                    console.log('Keep doing the game 111111.');
                     // Someonelse has been elimnated
                     this.updateGameInformation(info);
                   }
                 });
             } else {
+              console.log('Keep doing the game 222222.');
               // Keep going the game
               this.updateGameInformation(info);
             }
@@ -285,6 +291,19 @@ export class GameComponent implements OnInit {
       if (misterWhiteWord) {
         console.log('Mister White sent this word:');
         console.log(misterWhiteWord);
+        this.stompClient.send(
+          `/app/games/${this.game.id}/words/mrWhite`,
+          {},
+          JSON.stringify({
+            role: {
+              id: this.roleId,
+            },
+            turn: {
+              id: this.turnNumberId,
+            },
+            word: misterWhiteWord,
+          })
+        );
       }
     });
   }
