@@ -1,8 +1,12 @@
 <h1 mat-dialog-title>Hi!</h1>
 <div mat-dialog-content>
-  <p>{{ data.question }}</p>
   <mat-form-field>
-    <input matInput [(ngModel)]="data.value" />
+    <mat-label>{{ data.question }}</mat-label>
+    <input
+      matInput
+      placeholder="{{ data.placeholder }}"
+      [(ngModel)]="data.value"
+    />
   </mat-form-field>
 </div>
 <div mat-dialog-actions>

@@ -281,7 +281,7 @@ export class GameComponent implements OnInit {
       width: '250px',
       data: {
         question: 'What do you think the civil word is?',
-        value: 'ex: souris',
+        placeholder: 'souris',
       },
     });
     dialogRef.afterClosed().subscribe((misterWhiteWord) => {
