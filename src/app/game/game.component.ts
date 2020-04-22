@@ -144,6 +144,8 @@ export class GameComponent implements OnInit {
   async initializeWebSocketConnection() {
     let ws = new SockJS(this.serverUrl);
     this.stompClient = Stomp.over(ws);
+    // Disable message log
+    this.stompClient.debug = (message) => {};
     this.stompClient.connect({}, (frame) => {
       this.stompClient.subscribe(
         `/app/games/${this.game.id}/words`,
