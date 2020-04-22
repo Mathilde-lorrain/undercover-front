@@ -8,6 +8,7 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { NotifierService } from 'angular-notifier';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 import {
   MatDialog,
   MatDialogRef,
@@ -25,6 +26,7 @@ export class GameComponent implements OnInit {
   user: User;
   game: any;
   alive;
+  winner: boolean = false;
   roleType;
   word;
   words = [];
@@ -177,27 +179,52 @@ export class GameComponent implements OnInit {
         (message) => {
           // Check if the game is ended (if there are winners)
           const info = JSON.parse(message.body);
+          console.log(info);
           if (info.winnersId.length > 0) {
             info.winnersId.map((winnerRoleId) => {
-              this.game.roles.map((role) => {
-                if (role.id === winnerRoleId) {
-                  if (role.roleType === this.roleType) {
-                    this.notifier.notify(
-                      'success',
-                      `Victory of ${role.user.name}! Was ${role.roleType}.`
-                    );
-                  } else {
-                    this.notifier.notify(
-                      'error',
-                      `Victory of ${role.user.name}! Was ${role.roleType}.`
-                    );
+              // if my user is a winner
+              if (winnerRoleId === this.roleId) {
+                this.winner = true;
+                Swal.fire({
+                  title: 'Congratulations !',
+                  text: `Victory of ${this.roleType}`,
+                  imageUrl: 'https://i.ibb.co/VQxZKJC/trophy.png',
+                  imageWidth: 200,
+                  imageHeight: 200,
+                  imageAlt: 'trophy',
+                  confirmButtonColor: '#2c2c2c',
+                  confirmButtonText: 'Return to the home page',
+                  backdrop: `
+                      rgba(0,0,123,0.4)
+                      url("https://media.giphy.com/media/26tOZ42Mg6pbTUPHW/giphy.gif")
+                      center left
+                      round
+                    `,
+                }).then((result) => {
+                  if (result.value) {
+                    this.router.navigate([`/home`]);
                   }
+                });
+              }
+            });
+            if (!this.winner) {
+              Swal.fire({
+                title: 'Too bad ...',
+                text: `${this.roleType} lost the game!`,
+                confirmButtonColor: '#2c2c2c',
+                confirmButtonText: 'Return to the home page',
+                backdrop: `
+                rgba(0,0,123,0.4)
+                url("https://media.giphy.com/media/psmj4cmTGQQ0We0Uyf/giphy.gif")
+                center left
+                no-repeat
+              `,
+              }).then((result) => {
+                if (result.value) {
+                  this.router.navigate([`/home`]);
                 }
               });
-            });
-            setTimeout(() => {
-              this.router.navigate([`/home`]);
-            }, 1000);
+            }
           } else {
             // Check if exists
             if (info.eliminatedPlayerId) {
