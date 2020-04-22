@@ -32,7 +32,6 @@ export class AdminComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.f);
     // stop here if form is invalid
     if (this.wordForm.invalid) {
       return;
@@ -43,8 +42,7 @@ export class AdminComponent implements OnInit {
         this.wordForm.controls.secondWord.value
       )
       .subscribe((message) => {
-        console.log('Ok messgae added');
-        console.log(message);
+        // Words added
       });
   }
 }

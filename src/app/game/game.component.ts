@@ -56,7 +56,6 @@ export class GameComponent implements OnInit {
     this.authenticationService.currentUser.subscribe((x) => (this.user = x));
     // this.gameService.currentGame.subscribe((x) => (this.game = x));
     this.game = this.gameService.getGame();
-    console.log(this.game);
     this.initializeWebSocketConnection();
     this.turnNumber = this.game.turns[0].turnNumber;
     this.turnNumberId = this.game.turns[0].id;
@@ -93,9 +92,6 @@ export class GameComponent implements OnInit {
   voteAgainst(targetRoleId) {
     // Can only vote one time per turn
     this.isVoteEnable = false;
-    console.log(
-      `${this.user.name}(${this.roleId}) vote against ${targetRoleId} during the turnId: ${this.turnNumberId}.`
-    );
     this.stompClient.send(
       `/app/games/${this.game.id}/votes`,
       {},
@@ -152,10 +148,7 @@ export class GameComponent implements OnInit {
       this.stompClient.subscribe(
         `/app/games/${this.game.id}/words`,
         (message) => {
-          console.log('New word received.');
-
           const word = JSON.parse(message.body);
-
           // Save words and senders in order to display
           this.game.roles.map((role) => {
             if (word.role.id === role.id) {
@@ -172,7 +165,6 @@ export class GameComponent implements OnInit {
         }
       );
       this.stompClient.subscribe(`/app/games/${this.game.id}/votes`, () => {
-        console.log('Someone has voted.');
         this.numberOfVotes = this.numberOfVotes + 1;
         if (this.numberOfVotes === this.numberOfPlayersAlives - 1) {
           this.isTheLastToVote = true;
@@ -181,10 +173,8 @@ export class GameComponent implements OnInit {
       this.stompClient.subscribe(
         `/app/games/${this.game.id}/turns`,
         (message) => {
-          console.log('Turn is ended.');
           // Check if the game is ended (if there are winners)
           const info = JSON.parse(message.body);
-          console.log(info);
           if (info.winnersId.length > 0) {
             info.winnersId.map((winnerRoleId) => {
               this.game.roles.map((role) => {
@@ -209,34 +199,30 @@ export class GameComponent implements OnInit {
           } else {
             // Check if exists
             if (info.eliminatedPlayerId) {
-              console.log('Player id eliminated:');
-              console.log(info.eliminatedPlayerId);
               // Check if misterWhite
               this.game.roles
                 .filter((role) => role.roleType === 'MISTERWHITE')
                 .map((role) => {
                   this.misterWhiteRoleId = role.id;
-                  console.log('MisterWhite is:');
-                  console.log(JSON.stringify(role));
                   if (role.id === info.eliminatedPlayerId) {
-                    console.log('MISTER WHITE HAS BEEN KICKED.');
                     // Mister white has been eliminated
                     // Ask the word of Mr White
                     if (this.roleType === 'MISTERWHITE' && this.alive) {
                       this.turnNumberId = info.turnId;
                       this.openMisterWhiteDialog();
                     } else {
-                      // TODO: other player are waiting for mister white vote.
-                      console.log('WAITING FOR MISTERWHITE.');
+                      // Other player are waiting for mister white vote.
+                      this.notifier.notify(
+                        'info',
+                        `Mr. White has been eliminated.`
+                      );
                     }
                   } else {
-                    console.log('Keep doing the game 111111.');
                     // Someonelse has been elimnated
                     this.updateGameInformation(info);
                   }
                 });
             } else {
-              console.log('Keep doing the game 222222.');
               // Keep going the game
               this.updateGameInformation(info);
             }
@@ -276,7 +262,6 @@ export class GameComponent implements OnInit {
     });
     for (let i = 0; i < this.game.roles.length; i++) {
       if (this.game.roles[i].alive) {
-        console.log('Should display once per user left.');
         this.index = i;
         this.turnOfUserId = this.game.roles[i].user.id;
         if (this.user.id === this.turnOfUserId) {
@@ -298,8 +283,6 @@ export class GameComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((misterWhiteWord) => {
       if (misterWhiteWord) {
-        console.log('Mister White sent this word:');
-        console.log(misterWhiteWord);
         this.stompClient.send(
           `/app/games/${this.game.id}/words/mrWhite`,
           {},
@@ -333,8 +316,6 @@ export class GameComponent implements OnInit {
       return;
     }
     const word = this.wordForm.value.userWord;
-    console.log('This is my word to send: ');
-    console.log(word);
     this.stompClient.send(
       `/app/games/${this.game.id}/words`,
       {},

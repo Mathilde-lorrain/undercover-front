@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
-import { NotifierService } from "angular-notifier";
+import { NotifierService } from 'angular-notifier';
 import { AuthenticationService } from '../services/authentication.service';
 import { UserService } from '../services/user.service';
 
@@ -21,7 +21,7 @@ export class SignupComponent implements OnInit {
     private router: Router,
     private authenticationService: AuthenticationService,
     private userService: UserService,
-    private notifier: NotifierService,
+    private notifier: NotifierService
   ) {
     // redirect to home if already logged in
     if (this.authenticationService.currentUserValue) {
@@ -55,23 +55,15 @@ export class SignupComponent implements OnInit {
     }
 
     this.loading = true;
-    console.log('FORM');
-    console.log(this.registerForm.value);
-    this.userService
-      .register(this.registerForm.value)
-      .subscribe(
-        (data) => {
-          console.log('DATA');
-          console.log(data);
-          this.notifier.notify("success", "User created.");
-          this.router.navigate(['/login']);
-        },
-        (error) => {
-          console.log('ERROR');
-          console.log(error);
-          this.notifier.notify("error", "Something went wrong...");
-          this.loading = false;
-        }
-      );
+    this.userService.register(this.registerForm.value).subscribe(
+      (data) => {
+        this.notifier.notify('success', 'User created.');
+        this.router.navigate(['/login']);
+      },
+      (error) => {
+        this.notifier.notify('error', 'Something went wrong...');
+        this.loading = false;
+      }
+    );
   }
 }

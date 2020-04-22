@@ -57,14 +57,11 @@ export class LoginComponent implements OnInit {
       .login(this.f.username.value, this.f.password.value)
       .subscribe(
         (user) => {
-          console.log('DATA');
-          console.log(user);
           this.notifier.notify('success', `Welcome ${user.name}!`);
           this.router.navigate(['home']);
         },
         (error) => {
           this.notifier.notify('error', `Please check your credentials.`);
-          console.log(error);
           this.loading = false;
         }
       );

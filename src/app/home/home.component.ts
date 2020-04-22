@@ -50,7 +50,6 @@ export class HomeComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((gameId) => {
       if (gameId) {
-        console.log('Popup closed with a valid gameId');
         this.game.id = gameId;
         this.joinGame();
       }
@@ -84,8 +83,6 @@ export class HomeComponent implements OnInit {
         `/app/games/${this.game.id}/users`,
         (message) => {
           const user = message.body;
-          console.log('New user received: ');
-          console.log(user);
           this.usersWaiting.push(user);
           if (this.usersWaiting.length >= 3) {
             this.iCanStartTheGame = true;
@@ -93,7 +90,6 @@ export class HomeComponent implements OnInit {
         }
       );
       this.stompClient.subscribe(`/app/games/${this.game.id}`, (message) => {
-        console.log('Game is started');
         // Navigate to the game and start the game
         this.game = JSON.parse(message.body);
         this.gameService.setGame(this.game);
@@ -106,8 +102,6 @@ export class HomeComponent implements OnInit {
 
   createGame(): void {
     this.gameService.create().subscribe((game) => {
-      console.log('My game');
-      console.log(game);
       this.game = game;
       this.channelUrl = `/app/games/${game.id}/users`;
       this.initializeWebSocketConnection().then((data) => {
