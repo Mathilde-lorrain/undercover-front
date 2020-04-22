@@ -214,6 +214,7 @@ export class GameComponent implements OnInit {
                       this.openMisterWhiteDialog();
                     } else {
                       // Other player are waiting for mister white vote.
+                      this.instructions = 'En attente du vote de mister white.';
                       this.notifier.notify(
                         'info',
                         `Mr. White has been eliminated.`
