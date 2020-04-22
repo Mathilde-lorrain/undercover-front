@@ -3,6 +3,7 @@ import { AuthenticationService } from '../services/authentication.service';
 import { User } from '../models/user';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { GameService } from '../services/game.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-admin',
@@ -15,7 +16,8 @@ export class AdminComponent implements OnInit {
   constructor(
     private authenticationService: AuthenticationService,
     private formBuilder: FormBuilder,
-    private gameService: GameService
+    private gameService: GameService,
+    private notifier: NotifierService
   ) {
     this.authenticationService.currentUser.subscribe((x) => (this.user = x));
   }
@@ -43,6 +45,7 @@ export class AdminComponent implements OnInit {
       )
       .subscribe((message) => {
         // Words added
+        this.notifier.notify('info', `Words have been added.`);
       });
   }
 }
