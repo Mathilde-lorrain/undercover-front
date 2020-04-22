@@ -253,6 +253,17 @@ export class GameComponent implements OnInit {
                   }
                 });
             } else {
+              if (this.roleType === 'MISTERWHITE') {
+                this.notifier.notify(
+                  'error',
+                  `You have not discovered the civil word.`
+                );
+              } else {
+                this.notifier.notify(
+                  'success',
+                  `Mr. White hasn't discovered the civil word.`
+                );
+              }
               // Keep going the game
               this.updateGameInformation(info);
             }
@@ -287,6 +298,11 @@ export class GameComponent implements OnInit {
         if (eliminatedPlayerId === this.roleId) {
           this.notifier.notify('error', `You have been eliminated.`);
           this.alive = false;
+        } else {
+          this.notifier.notify(
+            'info',
+            `${role.user.name} was eliminated. Was ${role.roleType}.`
+          );
         }
       }
     });
