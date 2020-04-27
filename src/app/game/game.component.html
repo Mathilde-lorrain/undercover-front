@@ -28,24 +28,41 @@
     </div>
   </div>
   <div class="row">
-    <form [formGroup]="wordForm" (ngSubmit)="onSubmit()">
-      <label>Enter only one word:</label>
-      <div class="form-row">
-        <div class="col">
-          <input
-            type="text"
-            required
-            minlength="1"
-            class="form-control"
-            formControlName="userWord"
-          />
+    <div class="col-sm-6">
+      <form [formGroup]="wordForm" (ngSubmit)="onSubmit()">
+        <label>Enter only one word:</label>
+        <div class="form-row">
+          <div class="col">
+            <input
+              type="text"
+              required
+              minlength="1"
+              class="form-control"
+              formControlName="userWord"
+            />
+          </div>
+          <div class="col">
+            <button
+              [disabled]="!isMyTurn"
+              class="btn btn-primary"
+              type="submit"
+            >
+              Send
+            </button>
+          </div>
         </div>
-        <div class="col">
-          <button [disabled]="!isMyTurn" class="btn btn-primary" type="submit">
-            Send
-          </button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
+    <div class="col-sm-6">
+      <ul>
+        <li *ngIf="numberOfCivils != 0">Civil: {{ numberOfCivils }}</li>
+        <li *ngIf="numberOfUndercovers != 0">
+          Undercover: {{ numberOfUndercovers }}
+        </li>
+        <li *ngIf="numberOfMisterwhite != 0">
+          Mr.White: {{ numberOfMisterwhite }}
+        </li>
+      </ul>
+    </div>
   </div>
 </div>

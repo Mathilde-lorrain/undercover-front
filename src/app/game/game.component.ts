@@ -41,6 +41,9 @@ export class GameComponent implements OnInit {
   turnNumber;
   turnNumberId;
   index = 0;
+  numberOfCivils = 0;
+  numberOfUndercovers = 0;
+  numberOfMisterwhite = 0;
   roleId;
   firstInstructions = 'Renseignez un mot lors de votre tour';
   secondInstructions = "Voter contre l'un des joueurs";
@@ -63,6 +66,7 @@ export class GameComponent implements OnInit {
     this.initializeWebSocketConnection();
     this.turnNumber = this.game.turns[0].turnNumber;
     this.turnNumberId = this.game.turns[0].id;
+
     this.game.roles.map((role, index) => {
       // For every user
       // Initialize turnOfUserId
@@ -71,6 +75,17 @@ export class GameComponent implements OnInit {
       }
       // Initialize array of words
       this.words[`${role.user.name}`] = [];
+
+      // Update roles number
+      if (role.roleType === 'CIVIL') {
+        this.numberOfCivils += 1;
+      }
+      if (role.roleType === 'UNDERCOVER') {
+        this.numberOfUndercovers += 1;
+      }
+      if (role.roleType === 'MISTERWHITE') {
+        this.numberOfMisterwhite += 1;
+      }
 
       // For the user itself
       if (role.user.id === this.user.id) {
@@ -183,7 +198,6 @@ export class GameComponent implements OnInit {
         (message) => {
           // Check if the game is ended (if there are winners)
           const info = JSON.parse(message.body);
-          console.log(info);
           if (info.winnersId.length > 0) {
             info.winnersId.map((winnerRoleId) => {
               // if my user is a winner
@@ -233,12 +247,11 @@ export class GameComponent implements OnInit {
             // Check if exists
             if (info.eliminatedPlayerId) {
               // Check if misterWhite
-              this.game.roles
-                .filter((role) => role.roleType === 'MISTERWHITE')
-                .map((role) => {
-                  this.misterWhiteRoleId = role.id;
-                  if (role.id === info.eliminatedPlayerId) {
+              this.game.roles.map((role) => {
+                if (role.id === info.eliminatedPlayerId) {
+                  if (role.roleType === 'MISTERWHITE') {
                     // Mister white has been eliminated
+                    this.misterWhiteRoleId = role.id;
                     // Ask the word of Mr White
                     if (this.roleType === 'MISTERWHITE' && this.alive) {
                       this.turnNumberId = info.turnId;
@@ -255,7 +268,8 @@ export class GameComponent implements OnInit {
                     // Someonelse has been elimnated
                     this.updateGameInformation(info);
                   }
-                });
+                }
+              });
             } else {
               if (this.roleType === 'MISTERWHITE') {
                 this.notifier.notify(
@@ -298,6 +312,16 @@ export class GameComponent implements OnInit {
       if (role.id === eliminatedPlayerId) {
         // Tell who is dead
         role.alive = false;
+        // Update roles number
+        if (role.roleType === 'CIVIL') {
+          this.numberOfCivils -= 1;
+        }
+        if (role.roleType === 'UNDERCOVER') {
+          this.numberOfUndercovers -= 1;
+        }
+        if (role.roleType === 'MISTERWHITE') {
+          this.numberOfMisterwhite -= 1;
+        }
         // For the eliminated Player
         if (eliminatedPlayerId === this.roleId) {
           this.notifier.notify('error', `You have been eliminated.`);
