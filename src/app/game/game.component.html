@@ -1,0 +1,68 @@
+<div class="container">
+  <h3>Your word: {{ word }}</h3>
+  <h4>Tour {{ turnNumber }}: {{ instructions }}</h4>
+  <!-- Pour tous les users qui sont presents dans les roles, afficher la carte -->
+  <div class="mt-4 mb-4 row">
+    <div
+      *ngFor="let role of game.roles"
+      class="card"
+      [ngClass]="{
+        breath: turnOfUserId == role.user.id
+      }"
+      style="width: 18rem;"
+    >
+      <div class="card-body" [ngClass]="{ eliminated: !role.alive }">
+        <h5 class="card-title">{{ role.user.name | titlecase }}</h5>
+        <ul>
+          <li *ngFor="let word of words[role.user.name]">{{ word }}</li>
+        </ul>
+        <button
+          class="btn btn-primary"
+          *ngIf="user.id != role.user.id && role.alive"
+          (click)="voteAgainst(role.id)"
+          [disabled]="!isVoteEnable || !alive"
+        >
+          Vote
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <form [formGroup]="wordForm" (ngSubmit)="onSubmit()">
+        <label>Enter only one word:</label>
+        <div class="form-row">
+          <div class="col">
+            <input
+              type="text"
+              required
+              minlength="1"
+              class="form-control"
+              formControlName="userWord"
+            />
+          </div>
+          <div class="col">
+            <button
+              [disabled]="!isMyTurn"
+              class="btn btn-primary"
+              type="submit"
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-sm-6">
+      <ul>
+        <li *ngIf="numberOfCivils != 0">Civil: {{ numberOfCivils }}</li>
+        <li *ngIf="numberOfUndercovers != 0">
+          Undercover: {{ numberOfUndercovers }}
+        </li>
+        <li *ngIf="numberOfMisterwhite != 0">
+          Mr.White: {{ numberOfMisterwhite }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

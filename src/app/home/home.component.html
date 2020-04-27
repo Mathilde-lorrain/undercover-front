@@ -1,0 +1,99 @@
+<div class="container">
+  <div *ngIf="user">
+    <div *ngIf="!isWaitingGame" class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Rejoindre une partie</h5>
+            <p class="card-text">
+              With supporting text below as a natural lead-in to additional
+              content.
+            </p>
+            <button (click)="openDialog()" class="btn btn-primary">Go</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Creer une partie</h5>
+            <p class="card-text">
+              With supporting text below as a natural lead-in to additional
+              content.
+            </p>
+            <button (click)="createGame()" class="btn btn-primary">Go</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Statistiques</h5>
+            <p class="card-text">
+              With supporting text below as a natural lead-in to additional
+              content.
+            </p>
+            <button disabled class="btn btn-primary">Go</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="isWaitingGame">
+      <div class="row">
+        <button (click)="cancel()" class="col-md-2 btn btn-dark">
+          Cancel
+        </button>
+        <div *ngIf="iOweTheGame" class="col-md-5">
+          <button
+            (click)="startTheGame()"
+            [disabled]="!iCanStartTheGame"
+            class="btn btn-primary ml-2"
+          >
+            Start the game
+          </button>
+          <span class="ml-2">Joueurs prets: </span>
+          <li *ngFor="let user of usersWaiting">
+            {{ user }}
+          </li>
+        </div>
+        <div class="col-md-2">Game id: {{ game.id }}</div>
+      </div>
+
+      <div class="row">
+        <div id="loader">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="loading"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!user">
+    <div class="row">
+      <div class="col-md-8">
+        Welcome to undercover!<br />
+        <br />
+        Les Civils, l'Undercover et Mr.White partagent le monde d'Undercover ^^.
+        Votre but est de découvrir l'identité des autres joueurs (et la vôtre !)
+        aussi vite que possible pour éliminer vos ennemis ! Votre indice est un
+        mot secret ! -------------- • Vous êtes à une fête ou une soirée, à la
+        recherche d'un jeu auquel tout le monde peut participer ? 🎉 • Ou vous
+        voulez un bon moyen d'interagir avec vos amis et futurs amis à un dîner,
+        une sortie, au travail ou même à l'école ? Ne cherchez plus ! Undercover
+        ^^, comme d'autres jeux apéro brise-glace ou de soirée tels que Les
+        loups-garous, Mafia, Spyfall et 谁是卧底, a été conçu pour assurer la
+        participation de tous ceux qui savent lire et parler. Fous rires et
+        surprises garantis ! 😁
+      </div>
+      <div class="col-md-4">
+        <img class="img-fluid" src="assets/logo.png" />
+      </div>
+    </div>
+  </div>
+</div>

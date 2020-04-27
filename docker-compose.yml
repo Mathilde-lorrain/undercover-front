@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  undercover-front:
+    build:
+      context: ./
+    container_name: undercover-front
+    image: undercover-front
+    env_file:
+      - .env
+    ports:
+      - 8081:80

@@ -1,0 +1,5 @@
+version: '3'
+services:
+  undercover-front:
+    image: registry.gitlab.com/mathildelorrain/undercover_front/undercover-front:${TAG}
+    restart: unless-stopped
