@@ -129,6 +129,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "undercover"
+    }
+  },
+  "defaultProject": "undercover",
+  "cli": {
+    "analytics": false
+  }
 }

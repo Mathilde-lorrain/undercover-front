@@ -21,9 +21,9 @@ frontend:build:
       - $STORE_APP/dist/
     expire_in: 1h
   before_script:
-    - npm install
+    - yarn install
   script:
-    - npm run ng build
+    - yarn run ng build
 
 frontend:package:
   image: $DOCKER_IMAGE

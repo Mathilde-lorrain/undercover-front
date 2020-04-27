@@ -1,0 +1,14 @@
+body {
+  font-family: 'Roboto', sans-serif;
+}
+.form-control {
+  border-color: #eee;
+  min-height: 41px;
+  box-shadow: none !important;
+}
+.form-control:focus {
+  border-color: #00bcd4;
+}
+.form-control, .btn {
+  border-radius: 3px;
+}

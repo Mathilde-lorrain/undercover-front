@@ -4,11 +4,11 @@
 # We label our stage as ‘builder’
 FROM node:10-alpine as builder
 
-COPY package.json package-lock.json ./
+COPY package.json yarn.lock ./
 
 ## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
 
-RUN npm install && mkdir /undercover-front && mv ./node_modules ./undercover-front
+RUN yarn install && mkdir /undercover-front && mv ./node_modules ./undercover-front
 
 WORKDIR /undercover-front
 
@@ -16,7 +16,7 @@ COPY . .
 
 ## Build the angular app in production mode and store the artifacts in dist folder
 
-RUN npm run ng build -- --prod --output-path=dist
+RUN yarn run ng build -- --prod --output-path=dist
 
 
 ### STAGE 2: Setup ###
