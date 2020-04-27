@@ -366,6 +366,10 @@ export class GameComponent implements OnInit {
       return;
     }
     const word = this.wordForm.value.userWord;
+    // Test if there is only one word in word variable
+    if (word.indexOf(' ') !== -1) {
+      return;
+    }
     this.stompClient.send(
       `/app/games/${this.game.id}/words`,
       {},
@@ -380,5 +384,7 @@ export class GameComponent implements OnInit {
       })
     );
     this.isMyTurn = false;
+    // Clear the form after submission
+    this.wordForm.reset();
   }
 }
