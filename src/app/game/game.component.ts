@@ -187,12 +187,25 @@ export class GameComponent implements OnInit {
           this.nextTurn();
         }
       );
-      this.stompClient.subscribe(`/app/games/${this.game.id}/votes`, () => {
-        this.numberOfVotes = this.numberOfVotes + 1;
-        if (this.numberOfVotes === this.numberOfPlayersAlives - 1) {
-          this.isTheLastToVote = true;
+      this.stompClient.subscribe(
+        `/app/games/${this.game.id}/votes`,
+        (message) => {
+          const msg = JSON.parse(message.body);
+          const voterId = msg.voter.id;
+          this.game.roles
+            // Filter role id to get only one role
+            .filter((role) => role.id == voterId)
+            // Filter if it's not the current user
+            .filter((role) => role.id != this.roleId)
+            .map((role) => {
+              this.notifier.notify('info', `${role.user.name} has voted.`);
+            });
+          this.numberOfVotes = this.numberOfVotes + 1;
+          if (this.numberOfVotes === this.numberOfPlayersAlives - 1) {
+            this.isTheLastToVote = true;
+          }
         }
-      });
+      );
       this.stompClient.subscribe(
         `/app/games/${this.game.id}/turns`,
         (message) => {
