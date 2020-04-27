@@ -29,6 +29,8 @@ export class GameComponent implements OnInit {
   winner: boolean = false;
   roleType;
   word;
+  civilWord;
+  undercoverWord;
   words = [];
   isVoteEnable: boolean = false;
   isMyTurn: boolean = false;
@@ -82,6 +84,8 @@ export class GameComponent implements OnInit {
       }
     });
     this.numberOfPlayersAlives = this.game.roles.length;
+    this.civilWord = this.game.civilWord;
+    this.undercoverWord = this.game.undercoverWord;
     if (this.roleType === 'CIVIL') {
       this.word = this.game.civilWord;
     } else if (this.roleType === 'UNDERCOVER') {
@@ -186,8 +190,8 @@ export class GameComponent implements OnInit {
               if (winnerRoleId === this.roleId) {
                 this.winner = true;
                 Swal.fire({
-                  title: 'Congratulations !',
-                  text: `Victory of ${this.roleType}`,
+                  title: `Congratulations ${this.roleType}, you won!`,
+                  text: `Civil's word was ${this.civilWord}, undercover's word was ${this.undercoverWord}.`,
                   imageUrl: 'https://i.ibb.co/VQxZKJC/trophy.png',
                   imageWidth: 200,
                   imageHeight: 200,
@@ -209,8 +213,8 @@ export class GameComponent implements OnInit {
             });
             if (!this.winner) {
               Swal.fire({
-                title: 'Too bad ...',
-                text: `${this.roleType} lost the game!`,
+                title: `${this.roleType} lost the game.`,
+                text: `Civil's word was ${this.civilWord}, undercover's word was ${this.undercoverWord}.`,
                 confirmButtonColor: '#2c2c2c',
                 confirmButtonText: 'Return to the home page',
                 backdrop: `
