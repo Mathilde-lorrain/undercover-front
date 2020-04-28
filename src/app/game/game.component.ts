@@ -36,7 +36,9 @@ export class GameComponent implements OnInit {
   isMyTurn: boolean = false;
   isTheLastToVote: boolean = false;
   numberOfVotes = 0;
+  numberOfVotesLeft = 0;
   numberOfPlayersAlives;
+  isTurnToVote: boolean = false;
   turnOfUserId;
   turnNumber;
   turnNumberId;
@@ -93,6 +95,8 @@ export class GameComponent implements OnInit {
       }
     });
     this.numberOfPlayersAlives = this.game.roles.length;
+    // Initialize number of vote left
+    this.numberOfVotesLeft = this.numberOfPlayersAlives;
     this.civilWord = this.game.civilWord;
     this.undercoverWord = this.game.undercoverWord;
     if (this.roleType === 'CIVIL') {
@@ -143,6 +147,8 @@ export class GameComponent implements OnInit {
       }
     } else {
       this.notifier.notify('info', `Time to vote.`);
+      // Turn to vote
+      this.isTurnToVote = true;
       // Update game instructions
       this.instructions = this.secondInstructions;
       // Back to zero
@@ -169,10 +175,6 @@ export class GameComponent implements OnInit {
           // Save words and senders in order to display
           this.game.roles.map((role) => {
             if (word.role.id === role.id) {
-              this.notifier.notify(
-                'info',
-                `${role.user.name} says ${word.word}.`
-              );
               this.words[`${role.user.name}`].push(word.word);
             }
           });
@@ -194,7 +196,8 @@ export class GameComponent implements OnInit {
             .map((role) => {
               this.notifier.notify('info', `${role.user.name} has voted.`);
             });
-          this.numberOfVotes = this.numberOfVotes + 1;
+          this.numberOfVotes += 1;
+          this.numberOfVotesLeft -= 1;
           if (this.numberOfVotes === this.numberOfPlayersAlives - 1) {
             this.isTheLastToVote = true;
           }
@@ -299,6 +302,8 @@ export class GameComponent implements OnInit {
   }
 
   updateGameInformation(info): void {
+    // Turn to play
+    this.isTurnToVote = false;
     this.instructions = this.firstInstructions;
     this.turnNumberId = info.turnId;
     this.turnNumber = this.turnNumber + 1;
@@ -307,6 +312,7 @@ export class GameComponent implements OnInit {
     this.numberOfVotes = 0;
     // Update number of players in the game
     this.numberOfPlayersAlives = this.numberOfPlayersAlives - 1;
+    this.numberOfVotesLeft = this.numberOfPlayersAlives;
     let eliminatedPlayerId;
     if (info.eliminatedPlayerId) {
       eliminatedPlayerId = info.eliminatedPlayerId;
