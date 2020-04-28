@@ -2,9 +2,9 @@
   <h4>Tour {{ turnNumber }}: {{ instructions }}</h4>
   <div class="row">
     <h5 class="col-sm-6">Your word: {{ word }}</h5>
-    <span *ngIf="isTurnToVote" class="col-sm-6"
-      >Number of votes left: {{ numberOfVotesLeft }}</span
-    >
+    <h5 *ngIf="isTurnToVote" class="col-sm-6">
+      Number of votes left: {{ numberOfVotesLeft }}
+    </h5>
   </div>
   <!-- Pour tous les users qui sont presents dans les roles, afficher la carte -->
   <div class="mt-4 mb-4 row">
@@ -17,7 +17,10 @@
       style="width: 18rem;"
     >
       <div class="card-body" [ngClass]="{ eliminated: !role.alive }">
-        <h5 class="card-title">{{ role.user.name | titlecase }}</h5>
+        <h5 class="card-title">
+          {{ role.user.name | titlecase }}
+          <span *ngIf="!role.alive">({{ role.roleType }})</span>
+        </h5>
         <ul>
           <li *ngFor="let word of words[role.user.name]">{{ word }}</li>
         </ul>
