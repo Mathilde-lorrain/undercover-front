@@ -41,9 +41,7 @@ export class GameComponent implements OnInit {
   turnNumber;
   turnNumberId;
   index = 0;
-  numberOfCivils = 0;
-  numberOfUndercovers = 0;
-  numberOfMisterwhite = 0;
+  numberOfRoles = [];
   roleId;
   firstInstructions = 'Renseignez un mot lors de votre tour';
   secondInstructions = "Voter contre l'un des joueurs";
@@ -76,15 +74,11 @@ export class GameComponent implements OnInit {
       // Initialize array of words
       this.words[`${role.user.name}`] = [];
 
-      // Update roles number
-      if (role.roleType === 'CIVIL') {
-        this.numberOfCivils += 1;
-      }
-      if (role.roleType === 'UNDERCOVER') {
-        this.numberOfUndercovers += 1;
-      }
-      if (role.roleType === 'MISTERWHITE') {
-        this.numberOfMisterwhite += 1;
+      // Update roles number or initialize if doesn't exist
+      if (this.numberOfRoles.hasOwnProperty(role.roleType)) {
+        this.numberOfRoles[role.roleType] += 1;
+      } else {
+        this.numberOfRoles[role.roleType] = 1;
       }
 
       // For the user itself
@@ -325,16 +319,10 @@ export class GameComponent implements OnInit {
       if (role.id === eliminatedPlayerId) {
         // Tell who is dead
         role.alive = false;
+
         // Update roles number
-        if (role.roleType === 'CIVIL') {
-          this.numberOfCivils -= 1;
-        }
-        if (role.roleType === 'UNDERCOVER') {
-          this.numberOfUndercovers -= 1;
-        }
-        if (role.roleType === 'MISTERWHITE') {
-          this.numberOfMisterwhite -= 1;
-        }
+        this.numberOfRoles[role.roleType] -= 1;
+
         // For the eliminated Player
         if (eliminatedPlayerId === this.roleId) {
           this.notifier.notify('error', `You have been eliminated.`);

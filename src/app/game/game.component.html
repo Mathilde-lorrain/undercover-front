@@ -55,12 +55,8 @@
     </div>
     <div class="col-sm-6">
       <ul>
-        <li *ngIf="numberOfCivils != 0">Civil: {{ numberOfCivils }}</li>
-        <li *ngIf="numberOfUndercovers != 0">
-          Undercover: {{ numberOfUndercovers }}
-        </li>
-        <li *ngIf="numberOfMisterwhite != 0">
-          Mr.White: {{ numberOfMisterwhite }}
+        <li *ngFor="let role of numberOfRoles | keyvalue">
+          {{ role.key }}: {{ role.value }}
         </li>
       </ul>
     </div>
