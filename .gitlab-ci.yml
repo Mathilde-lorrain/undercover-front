@@ -39,6 +39,9 @@ frontend:package:
     - docker build -f $STORE_APP/Dockerfile --cache-from $CI_REGISTRY_IMAGE/undercover-front:latest -t $CI_REGISTRY_IMAGE/undercover-front:$CI_COMMIT_REF_NAME -t $CI_REGISTRY_IMAGE/undercover-front:latest $STORE_APP
     - docker push $CI_REGISTRY_IMAGE/undercover-front:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY_IMAGE/undercover-front:latest
+  only:
+    - develop
+    - master
 
 frontend:staging:
   stage: deploy

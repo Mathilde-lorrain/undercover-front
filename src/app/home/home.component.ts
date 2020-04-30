@@ -13,6 +13,7 @@ import {
 import { DialogData } from '../modals/gameId/DialogData';
 import { ModalComponent } from '../modals/gameId/modal.component';
 import { Router } from '@angular/router';
+import { AvatarGenerator } from 'random-avatar-generator';
 
 @Component({
   selector: 'app-home',
@@ -27,7 +28,7 @@ export class HomeComponent implements OnInit {
   iOweTheGame: boolean = false;
   // Cannot start the game before 3 players in the game
   iCanStartTheGame: boolean = false;
-  usersWaiting = [];
+  usersWaiting = {};
   serverUrl = `${backUrl}/socket`;
   channelUrl;
   stompClient;
@@ -84,10 +85,26 @@ export class HomeComponent implements OnInit {
       this.stompClient.subscribe(
         `/app/games/${this.game.id}/users`,
         (message) => {
-          const user = message.body;
-          this.usersWaiting.push(user);
-          if (this.usersWaiting.length >= 3) {
-            this.iCanStartTheGame = true;
+          if (this.iOweTheGame) {
+            const user = message.body;
+            this.usersWaiting[user] = this.generateAvatar(user);
+            this.stompClient.send(
+              `/app/games/${this.game.id}/usersWaiting`,
+              {},
+              JSON.stringify(this.usersWaiting)
+            );
+            if (Object.keys(this.usersWaiting).length >= 3) {
+              this.iCanStartTheGame = true;
+            }
+          }
+        }
+      );
+      this.stompClient.subscribe(
+        `/app/games/${this.game.id}/usersWaiting`,
+        (message) => {
+          if (!this.iOweTheGame) {
+            const usersWating = JSON.parse(message.body);
+            this.usersWaiting = usersWating;
           }
         }
       );
@@ -122,5 +139,23 @@ export class HomeComponent implements OnInit {
 
   startTheGame(): void {
     this.stompClient.send(`/app/games/${this.game.id}`, {}, `{}`);
+  }
+
+  copyMessage(val: string) {
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = val;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+  }
+
+  generateAvatar(name: string): string {
+    return AvatarGenerator.prototype.generateRandomAvatar();
   }
 }
